@@ -82,8 +82,15 @@ for (country in countries_list) {
   # add moving averages
   all_data <- all_data %>%
     mutate(
+      # rolling average
       reproduction_rate_week_rolling_avg = rollmean(reproduction_rate, k = 7, fill = NA),
-      mobility_change_from_baseline_week_rolling_avg = rollmean(mobility_change_from_baseline, k = 7, fill = NA)
+      mobility_change_from_baseline_week_rolling_avg = rollmean(mobility_change_from_baseline, k = 7, fill = NA),
+      # trying with the z-score
+      mobility_change_from_baseline_mean = mean(mobility_change_from_baseline),
+      mobility_change_from_baseline_standard_deviation = sd(mobility_change_from_baseline)
+    ) %>%
+    mutate(
+      mobility_change_from_baseline_zscore = (mobility_change_from_baseline - mobility_change_from_baseline_mean) / mobility_change_from_baseline_standard_deviation
     ) %>%
     drop_na()
   

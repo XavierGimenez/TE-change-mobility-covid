@@ -4,7 +4,7 @@ library("jsonlite")
 library("tidyr")
 library("purrr")
 library("jsonlite")
-
+library("zoo")
 
 # get data from Our World In Data
 owid_covid_data <- read.csv2(
@@ -15,11 +15,11 @@ owid_covid_data <- read.csv2(
 )
 
 countries_list <- list(
-  c("ES","Spain"),
-  c("GB","United Kingdom"),
-  c("IL","Israel"),
-  c("DE","Germany"),
-  c("US","United States")
+  c("ES","Spain")
+  # c("GB","United Kingdom"),
+  # c("IL","Israel"),
+  # c("DE","Germany"),
+  # c("US","United States")
 )
 
 for (country in countries_list) {
@@ -78,6 +78,14 @@ for (country in countries_list) {
     names_to = "metric",
     values_to = "mobility_change_from_baseline"
   )
+  
+  # add moving averages
+  all_data <- all_data %>%
+    mutate(
+      reproduction_rate_week_rolling_avg = rollmean(reproduction_rate, k = 7, fill = NA),
+      mobility_change_from_baseline_week_rolling_avg = rollmean(mobility_change_from_baseline, k = 7, fill = NA)
+    ) %>%
+    drop_na()
   
   write_json(
     x = all_data,

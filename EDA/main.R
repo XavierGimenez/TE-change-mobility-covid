@@ -5,27 +5,6 @@ library("tidyr")
 library("purrr")
 library("jsonlite")
 
-# get all time span available for ES
-df_ES <- bind_rows(
-  read.csv2(
-    file = "data/Region_Mobility_Report_CSVs/2020_ES_Region_Mobility_Report.csv",
-    header = TRUE,
-    sep = ","
-  ),
-  read.csv2(
-    file = "data/Region_Mobility_Report_CSVs/2021_ES_Region_Mobility_Report.csv",
-    header = TRUE,
-    sep = ","
-  )
-)
-
-write.csv(
-  df_ES,
-  file = "data_output/ES_Region_Mobility_Report.csv",
-  sep = ",",
-  row.names = FALSE
-)
-
 
 # get data from Our World In Data
 owid_covid_data <- read.csv2(
@@ -35,30 +14,62 @@ owid_covid_data <- read.csv2(
   stringsAsFactors = FALSE
 )
 
-# just get date, reproduction rate and filter by dates with indicator values
-reproduction_rate_ES <- owid_covid_data %>% 
-  filter(location == "Spain") %>%
-  select(date, reproduction_rate) %>%
-  mutate( reproduction_rate = as.numeric(reproduction_rate)) %>%
-  filter(!is.na(reproduction_rate))
+countries_list <- list(
+  c("ES","Spain"),
+  c("GB","United Kingdom"),
+  c("IL","Israel"),
+  c("DE","Germany"),
+  c("US","United States")
+)
 
-# get only mobility data at country level
-df_ES.all_regions_agg <- df_ES %>%
-  filter(sub_region_1 == "") %>%
-  select(
-    date, 
-    retail_and_recreation_percent_change_from_baseline,
-    grocery_and_pharmacy_percent_change_from_baseline,
-    parks_percent_change_from_baseline,
-    transit_stations_percent_change_from_baseline,
-    workplaces_percent_change_from_baseline,
-    residential_percent_change_from_baseline
+for (country in countries_list) {
+  
+  country_ISO_code = country[1]
+  country_name = country[2]
+  
+  # get all time span available of mobility data per country
+  df <- bind_rows(
+    read.csv2(
+      file = paste0("data/Region_Mobility_Report_CSVs/2020_", country_ISO_code, "_Region_Mobility_Report.csv"),
+      header = TRUE,
+      sep = ","
+    ),
+    read.csv2(
+      file = paste0("data/Region_Mobility_Report_CSVs/2021_", country_ISO_code, "_Region_Mobility_Report.csv"),
+      header = TRUE,
+      sep = ","
+    )
   )
-
-
-all_data <- inner_join(
-    reproduction_rate_ES,
-    df_ES.all_regions_agg,
+  write.csv(
+    df,
+    file = paste0("data_output/", country_ISO_code, "_Region_Mobility_Report.csv"),
+    row.names = FALSE
+  )
+  
+  # just get date, reproduction rate and filter by dates with indicator values
+  reproduction_rate <- owid_covid_data %>% 
+    filter(location == country_name) %>%
+    select(date, reproduction_rate) %>%
+    mutate( reproduction_rate = as.numeric(reproduction_rate)) %>%
+    filter(!is.na(reproduction_rate))
+  
+  # get only mobility data at country level
+  df.all_regions_agg <- df %>%
+    filter(sub_region_1 == "") %>%
+    select(
+      date, 
+      retail_and_recreation_percent_change_from_baseline,
+      grocery_and_pharmacy_percent_change_from_baseline,
+      parks_percent_change_from_baseline,
+      transit_stations_percent_change_from_baseline,
+      workplaces_percent_change_from_baseline,
+      residential_percent_change_from_baseline
+    )
+  
+  
+  all_data <- inner_join(
+    reproduction_rate,
+    df.all_regions_agg,
     by = "date"
   ) %>%
   # make it tidy
@@ -67,8 +78,9 @@ all_data <- inner_join(
     names_to = "metric",
     values_to = "mobility_change_from_baseline"
   )
-
-write_json(
-  x = all_data,
-  path = "data_output/ES_reproductionrate_vs_mobility.json"
-)
+  
+  write_json(
+    x = all_data,
+    path = paste0("data_output/", country_ISO_code , "_reproductionrate_vs_mobility.json")
+  )
+}

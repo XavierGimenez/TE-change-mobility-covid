@@ -29702,17 +29702,32 @@
           {"type": "formula", "expr": "date(datum.date)", "as": "monthday"},
           {
             "type": "formula",
-            "expr": "year(datum.date) + '-' + week(datum.date)",
+            "expr": "year(datum.date) + ( year(datum.date) === 2021? week(datum.date)+53:week(datum.date))",
             "as": "week"
           },
           {"type": "filter", "expr": "true || datum.weekday === 5"},
           {"type": "filter", "expr": "datum.metric === metric"},
           {"type": "extent", "field": "weekday", "signal": "xext"},
-          {"type": "extent", "field": "reproduction_rate", "signal": "yext"}
+          {"type": "extent", "field": "reproduction_rate", "signal": "yext"},
+          {"type": "extent", "field": "week", "signal": "weekext"}
         ]
       }
     ],
     "scales": [
+      {
+        "name": "stroke",
+        "type": "linear",
+        "domain": { "signal": "weekext"},
+        "range": [0.5, 1.5],
+        "zero": false
+      },
+      {
+        "name": "strokeOpacity",
+        "type": "linear",
+        "domain": { "signal": "weekext"},
+        "range": [0.25, 0.75],
+        "zero": false
+      },
       {
         "name": "x",
         "type": "linear",
@@ -29759,18 +29774,15 @@
             "type": "line",
             "from": {"data": "series"},
             "encode": {
-              "enter": {
+              "update": {
+                "interpolate": {"value": "cardinal"},
+                "tension": {"value": 0},
                 "x": {"scale": "x", "field": "weekday"},
                 "y": {"scale": "y", "field": "mobility_change_from_baseline"},
                 "stroke": {"value": "grey"},
-                "strokeWidth": {"value": 2},
-                "strokeOpacity": {"value": 0.2}
-              },
-              "update": {
-                "interpolate": {"value": "monotone"},
-                "strokeOpacity": {"value": 0.2}
-              },
-              "hover": {"strokeOpacity": {"value": 0.5}}
+                "strokeWidth": { "signal": "scale('stroke', datum.week)"},
+                "strokeOpacity": { "signal": "scale('strokeOpacity', datum.week)"}
+              }
             }
           }
         ]

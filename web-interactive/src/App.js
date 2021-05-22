@@ -1,11 +1,12 @@
 import './App.css';
-import { Container } from 'react-bootstrap';
+import MobilityChangesWeeks from './ui/MobilityChangesWeeks';
+import { Fragment } from 'react';
 
 function App() {
   return (
-    <Container>
-        <h1>Bootstraping</h1>
-    </Container>    
+    <Fragment>
+        <MobilityChangesWeeks/>
+    </Fragment>    
   );
 }
 

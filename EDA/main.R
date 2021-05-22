@@ -15,6 +15,7 @@ owid_covid_data <- read.csv2(
 )
 
 countries_list <- list(
+  #c("NZ","New Zealand")
   c("ES","Spain")
   # c("GB","United Kingdom"),
   # c("IL","Israel"),
@@ -94,6 +95,12 @@ for (country in countries_list) {
     ) %>%
     drop_na()
   
+  # add week days so we can find patterns in week days and weekend days
+  all_data <- all_data %>%
+    mutate(
+      week_day = as.numeric(format(as.Date(date), format = "%u"))
+    )
+    print(country_ISO_code)
   write_json(
     x = all_data,
     path = paste0("data_output/", country_ISO_code , "_reproductionrate_vs_mobility.json")

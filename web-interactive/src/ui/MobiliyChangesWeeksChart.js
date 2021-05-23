@@ -5,7 +5,8 @@ import * as _ from 'lodash';
 import * as d3 from 'd3';
 import {
     getNumOfWeeks,
-    week
+    week,
+    formatDate
 } from '../util/timeUtils';
 
 
@@ -43,6 +44,7 @@ class MobilityChangesWeeksChart extends Component {
         
         this.width = size.width;
         this.height = size.width * 0.75;
+        this.margin = {top: 50, right: 5, bottom: 50, left: 5};
                 
         this.svg = d3.select(this.node)
             .attr('width', this.width)
@@ -53,8 +55,6 @@ class MobilityChangesWeeksChart extends Component {
 
     updateChart(data) {
 
-//if(_.first(data).metric !== "residential_percent_change_from_baseline") return;
-
         // set ids to weeks
         data.forEach( d => {
             let date = new Date(d.date),
@@ -63,17 +63,17 @@ class MobilityChangesWeeksChart extends Component {
             d.weekDay = date.getDay();
             d.week = year + ( year === 2021? week(d.date) + getNumOfWeeks(2021) : week(d.date) );
         });
-        let margin = {top: 50, right: 50, bottom: 50, left: 50},
+        
 
-            scaleX = d3.scaleLinear()
+        let scaleX = d3.scaleLinear()
                     .domain(d3.extent(data, d => d.weekDay))
-                    .range([0 + margin.left, this.width - margin.right]),
+                    .range([0 + this.margin.left, this.width - this.margin.right]),
 
             yDomain = d3.extent(data, d => d.mobility_change_from_baseline),
 
             scaleY = d3.scaleLinear()
                         .domain(yDomain)
-                        .range([this.height - margin.bottom, margin.top]),
+                        .range([this.height - this.margin.bottom, this.margin.top]),
 
             scaleStrokeWidth = d3.scaleLinear()
                                     .domain(d3.extent(data, d => d.week))
@@ -98,12 +98,29 @@ class MobilityChangesWeeksChart extends Component {
                                 .domain([0,1])
                                 .range(scaleY.domain());
 
-        // graph
+        // gradient for the weekly lines
+        let gradient = "uid-gradient";
+
+        this.svg.append('defs')
+            .append("linearGradient")
+            .attr("id", gradient)
+            .attr("gradientUnits", "userSpaceOnUse")
+            .attr("x1", 0)
+            .attr("y1", this.height - this.margin.bottom)
+            .attr("x2", 0)
+            .attr("y2", this.margin.top)
+            .selectAll("stop")
+            .data(d3.ticks(0, 1, 10))
+                .join("stop")
+                .attr("offset", d => d)
+                .attr("stop-color", d => scaleColor(scale2Gradient(d)) );
+                                
+        // graph        
         let graph = this.svg.append('g');
 
         graph.append('g')
             .attr("fill", "none")
-            .attr("stroke", "#444444")
+            .attr("stroke", "url(#" + gradient + ")")
             .attr("stroke-linejoin", "round")
             .attr("stroke-linecap", "round")
             .selectAll('path')
@@ -114,6 +131,77 @@ class MobilityChangesWeeksChart extends Component {
                 .attr('fill', 'none')
                 .attr('stroke-width', d => scaleStrokeWidth(_.first(d).week) )
                 .attr('stroke-opacity', d => scaleStrokeOpacity(_.first(d).week) )
+
+        // clone last week, use it as a highlight border
+        // and highlight last week
+        let lastLine = graph.selectAll(".weekly-line")
+            .filter( d => _.first(d).week === lastWeek)
+            .clone()
+            .attr('class', ".weekly-line-border")
+            .attr('stroke-width', scaleStrokeWidth(lastWeek)+ 7)
+            .attr('stroke-opacity', 1)
+            .attr('stroke', '#f8f8ee');
+      
+        graph.selectAll(".weekly-line")
+            .filter( d => _.first(d).week === lastWeek)
+            .attr('stroke', '#01e299')
+            .attr('stroke-opacity', 1)
+            .attr('stroke-width', scaleStrokeWidth(lastWeek)+ 2)
+            .raise();
+
+
+        let callout = (g, value) => {
+                if (!value) return g.style("display", "none");
+
+                   g
+                        .style("display", null)
+                        .style("pointer-events", "none")
+                        .style("font", "10px sans-serif");
+
+                    const path = g.selectAll("path")
+                        .data([null])
+                        .join("path")
+                        .attr("fill", "white")
+                        .attr("stroke", "black");
+
+                    const text = g.selectAll("text")
+                        .data([null])
+                        .join("text")
+                        .call(text => text
+                            .selectAll("tspan")
+                            .data((value + "").split(/\n/))
+                            .join("tspan")
+                                .attr("x", 0)
+                                .attr("y", (d, i) => `${i * 1.1}em`)
+                                .style("font-weight", (_, i) => i ? null : "bold")
+                                .text(d => d)
+                        );
+
+                    const { x, y, width: w, height: h } = text.node().getBBox();
+
+                    text.attr("transform", `translate(${-w / 2},${15 - y})`);
+                    path.attr("d", `M${-w / 2 - 10},5H-5l5,-5l5,5H${w / 2 + 10}v${h + 20}h-${w + 20}z`);
+        }
+
+        // add tooltip
+        const tooltip = this.svg.append("g");
+        lastLine.on("mousemove", function(event) {
+            const bisect = d3.bisector(d => d.weekDay).left;
+            const weekDay = scaleX.invert( d3.pointer(event, this)[0] );
+            const index = bisect(data, weekDay, 1);
+            const a = data[index - 1];
+            const b = data[index];
+            const datum = b && (weekDay - a.weekDay > b.weekDay - weekDay) ? b : a;
+        
+            tooltip
+                .attr("transform", `translate(${scaleX(datum.weekDay)},${scaleY(datum.mobility_change_from_baseline)})`)
+                .call(
+                    callout, 
+                    `${formatDate(new Date(datum.date))}`
+                );
+          });
+        
+        this.svg.on("mouseleave", () => tooltip.call(callout, null));
     }
 
 

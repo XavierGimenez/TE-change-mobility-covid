@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import { formatDefaultLocale } from 'd3';
 
 export const localYear = function(y) {
     let t0 = new Date();
@@ -28,3 +29,11 @@ export const getNumOfWeeks = (year) => {
 
     return weekNum;
 }
+
+export const formatDate = (date) => {
+    return date.toLocaleString("en", {
+        month: "short",
+        year: "numeric",
+        timeZone: "UTC"
+      });
+};

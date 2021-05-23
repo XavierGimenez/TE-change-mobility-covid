@@ -87,11 +87,11 @@ for (country in countries_list) {
       reproduction_rate_week_rolling_avg = rollmean(reproduction_rate, k = 7, fill = NA),
       mobility_change_from_baseline_week_rolling_avg = rollmean(mobility_change_from_baseline, k = 7, fill = NA),
       # trying with the z-score
-      mobility_change_from_baseline_mean = mean(mobility_change_from_baseline),
-      mobility_change_from_baseline_standard_deviation = sd(mobility_change_from_baseline)
-    ) %>%
-    mutate(
-      mobility_change_from_baseline_zscore = (mobility_change_from_baseline - mobility_change_from_baseline_mean) / mobility_change_from_baseline_standard_deviation
+      # mobility_change_from_baseline_mean = mean(mobility_change_from_baseline),
+      # mobility_change_from_baseline_standard_deviation = sd(mobility_change_from_baseline)
+    # ) %>%
+    # mutate(
+      # mobility_change_from_baseline_zscore = (mobility_change_from_baseline - mobility_change_from_baseline_mean) / mobility_change_from_baseline_standard_deviation
     ) %>%
     drop_na()
   
@@ -101,8 +101,12 @@ for (country in countries_list) {
       week_day = as.numeric(format(as.Date(date), format = "%u"))
     )
     print(country_ISO_code)
-  write_json(
+  
+  # files for web (TODO: convert mobility categories to integers)
+  write.csv(
     x = all_data,
-    path = paste0("data_output/", country_ISO_code , "_reproductionrate_vs_mobility.json")
+    sep = ",",
+    row.names = FALSE,
+    file = paste0("data_output/", country_ISO_code , "_reproductionrate_vs_mobility.csv")
   )
 }

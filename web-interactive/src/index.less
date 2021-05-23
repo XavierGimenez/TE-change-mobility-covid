@@ -1,5 +1,8 @@
 @color-bg: whitesmoke;
 @color-font: #333;
+@font-family-condensed: 'Roboto Condensed', 'Arial';
+@text-shadow-width: 1px;
+
 
 body {
     background-color: @color-bg;
@@ -7,7 +10,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Roboto Condensed', 'Arial';
+    font-family: @font-family-condensed;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-weight: 700;
@@ -15,4 +18,15 @@ h1, h2, h3, h4, h5, h6 {
 
 section {
     margin: 0 5rem;
+}
+
+
+.text-shadow {
+    text-shadow: @text-shadow-width @text-shadow-width 0 @color-bg, @text-shadow-width -@text-shadow-width 0 @color-bg, -@text-shadow-width @text-shadow-width 0 @color-bg, -@text-shadow-width -@text-shadow-width 0 @color-bg;
+}
+
+
+// svg
+.tick text {
+    font-family: @font-family-condensed;
 }

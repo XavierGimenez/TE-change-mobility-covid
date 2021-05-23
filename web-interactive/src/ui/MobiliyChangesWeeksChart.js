@@ -43,7 +43,7 @@ class MobilityChangesWeeksChart extends Component {
         
         this.width = size.width;
         this.height = size.width * 0.5;
-        this.margin = {top: 10, right:50, bottom: 100, left: 5};
+        this.margin = {top: 10, right:50, bottom: 80, left: 5};
                 
         this.svg = d3.select(this.node)
             .attr('width', this.width)
@@ -110,11 +110,11 @@ class MobilityChangesWeeksChart extends Component {
             .call(g => g.selectAll(".tick line").remove())
 
         let yAxis = g => g
-            .attr("transform", `translate(${this.margin.left},0)`)
+            .attr("transform", `translate(${this.margin.left*2.5},0)`)
             .call(d3.axisRight(scaleY)
                 .ticks(4)
                 .tickSize(0)
-                .tickFormat( tick => tick == 0 ? "Baseline" : tick)
+                .tickFormat( tick => tick == 0 ? "" : tick)
             )
             .call(g => g.select(".domain").remove())
             .call(g => g.selectAll(".tick:not(:first-of-type) line")
@@ -259,6 +259,24 @@ class MobilityChangesWeeksChart extends Component {
                     .attr('stroke-opacity', 0.3);
                 graph.selectAll(".weekly-line-border").remove();
             });
+
+        // add baseline
+        graph.append('line')
+            .attr('x1', this.margin.left - 10)
+            .attr('x2', this.width - this.margin.right + 10)
+            .attr('y1', scaleY(0))
+            .attr('y2', scaleY(0))
+            .attr("stroke", "#333")
+            .attr('stroke-width', 1)
+            .attr("stroke-dasharray", [2,2])
+        graph.append('text')
+            .attr('class', 'text-shadow')
+            .attr('font-size', 10)
+            .attr('font-weight', 500)
+            .attr('x', -this.margin.left*6)
+            .attr('y', scaleY(0))
+            .attr("alignment-baseline", "middle")
+            .text("Baseline")
     }
 
 

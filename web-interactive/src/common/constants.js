@@ -17,4 +17,6 @@ export const COUNTRIES = {
     ALL: [
         { ISO: 'ES', LABEL: 'Spain' }
     ]
-}
+};
+
+export const DAY_NAMES = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];

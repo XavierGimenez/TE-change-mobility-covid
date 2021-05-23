@@ -21,7 +21,16 @@ class App extends Component {
 
         // load data
         this.setState({
-            data: await d3.csv('data/ES_reproductionrate_vs_mobility.csv')
+            data: await d3.csv(
+                'data/ES_reproductionrate_vs_mobility.csv',
+                d => {
+                    d.mobility_change_from_baseline = +d.mobility_change_from_baseline;
+                    d.mobility_change_from_baseline_week_rolling_avg = +d.mobility_change_from_baseline_week_rolling_avg;
+                    d.reproduction_rate = +d.reproduction_rate;
+                    d.reproduction_rate_week_rolling_avg = +d.reproduction_rate_week_rolling_avg;
+                    return d;
+                }
+            )
         })
     }
 

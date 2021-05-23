@@ -48,7 +48,8 @@ class MobilityChangesWeeksChart extends Component {
                 
         this.svg = d3.select(this.node)
             .attr('width', this.width)
-            .attr('height', this.height);
+            .attr('height', this.height)
+            .style('overflow', 'visible');
     }
 
 
@@ -128,13 +129,14 @@ class MobilityChangesWeeksChart extends Component {
                 .join("path")
                 .attr("class", "weekly-line")
                 .attr("d", d => line(d))
+                .style('cursor', 'pointer')
                 .attr('fill', 'none')
                 .attr('stroke-width', d => scaleStrokeWidth(_.first(d).week) )
                 .attr('stroke-opacity', d => scaleStrokeOpacity(_.first(d).week) )
 
         // clone last week, use it as a highlight border
         // and highlight last week
-        let lastLine = graph.selectAll(".weekly-line")
+        graph.selectAll(".weekly-line")
             .filter( d => _.first(d).week === lastWeek)
             .clone()
             .attr('class', ".weekly-line-border")
@@ -142,13 +144,12 @@ class MobilityChangesWeeksChart extends Component {
             .attr('stroke-opacity', 1)
             .attr('stroke', '#f8f8ee');
       
-        graph.selectAll(".weekly-line")
+        let lastLine = graph.selectAll(".weekly-line")
             .filter( d => _.first(d).week === lastWeek)
             .attr('stroke', '#01e299')
             .attr('stroke-opacity', 1)
             .attr('stroke-width', scaleStrokeWidth(lastWeek)+ 2)
             .raise();
-
 
         let callout = (g, value) => {
                 if (!value) return g.style("display", "none");
@@ -185,23 +186,31 @@ class MobilityChangesWeeksChart extends Component {
 
         // add tooltip
         const tooltip = this.svg.append("g");
-        lastLine.on("mousemove", function(event) {
-            const bisect = d3.bisector(d => d.weekDay).left;
-            const weekDay = scaleX.invert( d3.pointer(event, this)[0] );
-            const index = bisect(data, weekDay, 1);
-            const a = data[index - 1];
-            const b = data[index];
-            const datum = b && (weekDay - a.weekDay > b.weekDay - weekDay) ? b : a;
-        
-            tooltip
-                .attr("transform", `translate(${scaleX(datum.weekDay)},${scaleY(datum.mobility_change_from_baseline)})`)
-                .call(
-                    callout, 
-                    `${formatDate(new Date(datum.date))}`
-                );
-          });
-        
-        this.svg.on("mouseleave", () => tooltip.call(callout, null));
+        graph
+            .selectAll(".weekly-line")
+            .on("mouseover", function(event, d) {
+                d3.select(this).attr('stroke', 'black').raise();
+                const pointer = d3.pointer(event, this);
+                /*const bisect = d3.bisector(d => d.weekDay).left;                
+                const weekDay = scaleX.invert( pointer[0] );
+                const index = bisect(data, weekDay, 1);
+                const a = data[index - 1];
+                const b = data[index];                
+                const datum = b && (weekDay - a.weekDay > b.weekDay - weekDay) ? a:b;*/
+                
+                tooltip
+                    //.attr("transform", `translate(${scaleX(datum.weekDay)},${scaleY(datum.mobility_change_from_baseline)})`)
+                    .attr("transform", `translate(${pointer[0]},${pointer[1] + 10})`)
+                    .call(
+                        callout, 
+                        `${formatDate(new Date(_.first(d).date))}`
+                    );
+            })
+            .on("mouseout", function() {
+                tooltip.call(callout, null);
+                d3.select(this).attr('stroke', d => _.first(d).week === lastWeek ? '#01e299':null);
+            });
+
     }
 
 

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
-import { MOBILITY_CATEGORIES } from '../common/constants';
+import { DAY_NAMES } from '../common/constants';
 import * as _ from 'lodash';
 import * as d3 from 'd3';
 import {
@@ -43,8 +42,8 @@ class MobilityChangesWeeksChart extends Component {
         const size = this.elementRef.current.getBoundingClientRect();
         
         this.width = size.width;
-        this.height = size.width * 0.75;
-        this.margin = {top: 50, right: 5, bottom: 50, left: 5};
+        this.height = size.width * 0.5;
+        this.margin = {top: 10, right:50, bottom: 100, left: 5};
                 
         this.svg = d3.select(this.node)
             .attr('width', this.width)
@@ -82,7 +81,7 @@ class MobilityChangesWeeksChart extends Component {
 
             scaleStrokeOpacity = d3.scaleLinear()
                                     .domain(d3.extent(data, d => d.week))
-                                    .range([0.25, 1]),
+                                    .range([0.25, 0.7]),
             scaleColor = d3.scaleSequential(
                     [-30, 0, 20], 
                     d3.interpolateRgb("rgb(207, 216, 220)", "#4eeca3")
@@ -98,6 +97,35 @@ class MobilityChangesWeeksChart extends Component {
             scale2Gradient = d3.scaleLinear()
                                 .domain([0,1])
                                 .range(scaleY.domain());
+
+        // axis
+        let xAxis = g => g
+            .attr("transform", `translate(0,${this.height - this.margin.bottom})`)
+            .call(
+            d3.axisBottom(scaleX)
+                .tickValues(_.range(0,7,1))
+                .tickFormat( tick => DAY_NAMES[Math.round(tick)])
+            )
+            .call(g => g.select(".domain").remove())
+            .call(g => g.selectAll(".tick line").remove())
+
+        let yAxis = g => g
+            .attr("transform", `translate(${this.margin.left},0)`)
+            .call(d3.axisRight(scaleY)
+                .ticks(4)
+                .tickSize(0)
+                .tickFormat( tick => tick == 0 ? "Baseline" : tick)
+            )
+            .call(g => g.select(".domain").remove())
+            .call(g => g.selectAll(".tick:not(:first-of-type) line")
+                .attr("stroke-opacity", 0.5)
+                .attr("stroke-dasharray", "2,2"))
+            .call(g => g.selectAll(".tick text")
+                .attr("x", d => d === 0? 5:-25)
+                .attr("dy", -4))
+        
+        this.svg.append("g").call(xAxis);
+        this.svg.append("g").call(yAxis);
 
         // gradient for the weekly lines
         let gradient = "uid-gradient";
@@ -119,9 +147,20 @@ class MobilityChangesWeeksChart extends Component {
         // graph        
         let graph = this.svg.append('g');
 
+        const voronoi = d3.Delaunay
+            .from(
+                data, d => scaleX(d.weekDay), d => scaleY(d.mobility_change_from_baseline))
+            .voronoi([
+                this.margin.left,
+                this.margin.top,
+                this.width - this.margin.right,
+                this.height - this.margin.bottom
+            ]);
+
+
         graph.append('g')
             .attr("fill", "none")
-            .attr("stroke", "url(#" + gradient + ")")
+            //.attr("stroke", "url(#" + gradient + ")")
             .attr("stroke-linejoin", "round")
             .attr("stroke-linecap", "round")
             .selectAll('path')
@@ -131,25 +170,9 @@ class MobilityChangesWeeksChart extends Component {
                 .attr("d", d => line(d))
                 .style('cursor', 'pointer')
                 .attr('fill', 'none')
+                .attr('stroke', d => (new Date(_.first(d).date)).getFullYear() === 2021? '#01e299':'#666666') //'#f86a6f')
                 .attr('stroke-width', d => scaleStrokeWidth(_.first(d).week) )
-                .attr('stroke-opacity', d => scaleStrokeOpacity(_.first(d).week) )
-
-        // clone last week, use it as a highlight border
-        // and highlight last week
-        graph.selectAll(".weekly-line")
-            .filter( d => _.first(d).week === lastWeek)
-            .clone()
-            .attr('class', ".weekly-line-border")
-            .attr('stroke-width', scaleStrokeWidth(lastWeek)+ 7)
-            .attr('stroke-opacity', 1)
-            .attr('stroke', '#f8f8ee');
-      
-        let lastLine = graph.selectAll(".weekly-line")
-            .filter( d => _.first(d).week === lastWeek)
-            .attr('stroke', '#01e299')
-            .attr('stroke-opacity', 1)
-            .attr('stroke-width', scaleStrokeWidth(lastWeek)+ 2)
-            .raise();
+                .attr('stroke-opacity', 0.3 ) // d => scaleStrokeOpacity(_.first(d).week) )
 
         let callout = (g, value) => {
                 if (!value) return g.style("display", "none");
@@ -186,38 +209,63 @@ class MobilityChangesWeeksChart extends Component {
 
         // add tooltip
         const tooltip = this.svg.append("g");
-        graph
-            .selectAll(".weekly-line")
-            .on("mouseover", function(event, d) {
-                d3.select(this).attr('stroke', 'black').raise();
+
+        // voronoi
+        let lineVoronoied;
+
+        const paths = graph
+            .append("g")
+            .attr("fill", "none")
+            .attr("pointer-events", "all")
+            .selectAll("path")
+            .data(data)
+            .join("path")
+            .attr("d", (d, i) => voronoi.renderCell(i))
+            .style("fill", "none")
+            .style("stroke", "none");
+        paths
+            .on("mouseenter", function(event) {
                 const pointer = d3.pointer(event, this);
-                /*const bisect = d3.bisector(d => d.weekDay).left;                
-                const weekDay = scaleX.invert( pointer[0] );
-                const index = bisect(data, weekDay, 1);
-                const a = data[index - 1];
-                const b = data[index];                
-                const datum = b && (weekDay - a.weekDay > b.weekDay - weekDay) ? a:b;*/
-                
+                const value = event.target.__data__;
+
                 tooltip
-                    //.attr("transform", `translate(${scaleX(datum.weekDay)},${scaleY(datum.mobility_change_from_baseline)})`)
                     .attr("transform", `translate(${pointer[0]},${pointer[1] + 10})`)
                     .call(
                         callout, 
-                        `${formatDate(new Date(_.first(d).date))}`
+                        `${formatDate(new Date(value.date))}`
                     );
-            })
-            .on("mouseout", function() {
-                tooltip.call(callout, null);
-                d3.select(this).attr('stroke', d => _.first(d).week === lastWeek ? '#01e299':null);
-            });
+                
+                lineVoronoied = graph.selectAll(".weekly-line")
+                    .filter(d => _.first(d).week === value.week);
 
+                lineVoronoied.clone()
+                    .attr('class', "weekly-line-border")
+                    .attr('stroke-width', scaleStrokeWidth(lastWeek)+ 7)
+                    .attr('stroke-opacity', 1)
+                    .attr('stroke', 'whitesmoke')
+                    .raise();
+                
+                lineVoronoied
+                    .attr('stroke', 'rgb(99, 69, 180)')
+                    .attr('stroke-width', 3)
+                    .attr('stroke-opacity', 1)
+                    .raise();
+            })
+            .on("mouseleave", function() {
+                tooltip.call(callout, null);
+                lineVoronoied
+                    .attr('stroke', d => (new Date(_.first(d).date)).getFullYear() === 2021? '#01e299':'#666666') //'#f86a6f')
+                    .attr('stroke-width', d => scaleStrokeWidth(_.first(d).week) )
+                    .attr('stroke-opacity', 0.3);
+                graph.selectAll(".weekly-line-border").remove();
+            });
     }
 
 
 
     render () {        
 
-        return <div ref={this.elementRef}>
+        return <div style={{maxWidth:"99%"}} ref={this.elementRef}>
             <svg ref={node => this.node = node}></svg>
         </div>
         

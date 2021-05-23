@@ -11,3 +11,10 @@ export const MOBILITY_CATEGORIES = {
 export const COLORS = {
     BG: '#f8f8ee'
 }
+
+export const COUNTRIES = {
+    DEFAULT: { ISO: 'ES', LABEL: 'Spain' },
+    ALL: [
+        { ISO: 'ES', LABEL: 'Spain' }
+    ]
+}

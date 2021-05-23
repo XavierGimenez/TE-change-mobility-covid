@@ -1,7 +1,8 @@
-import { React, Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { MOBILITY_CATEGORIES } from '../common/constants';
 import * as _ from 'lodash';
+import MobilityChangesWeeksChart from './MobiliyChangesWeeksChart';
 
 
 
@@ -10,15 +11,17 @@ class MobilityChangesWeeks extends Component {
 
 
     render() {
+        let { data } = this.props;
         return <Container>
             <h1>Mobility Changes</h1>
             {
-                _.chunk(_.values(MOBILITY_CATEGORIES), 3).map( chunk => <Row>
+                _.chunk(_.toPairs(MOBILITY_CATEGORIES), 3).map( chunk => <Row>
                     {
                         chunk.map( category => <Col>
-                            { 
-                                <h6>{category}</h6>
-                            }
+                            <Fragment>
+                                <h6>{category[1]}</h6>
+                                <MobilityChangesWeeksChart data={ _.filter(data, ['metric', category[0]]) }/>
+                            </Fragment>                            
                         </Col>)
                     }
                 </Row>)

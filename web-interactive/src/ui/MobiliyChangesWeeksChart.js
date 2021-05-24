@@ -65,8 +65,9 @@ class MobilityChangesWeeksChart extends Component {
         });
         
 
-        let scaleX = d3.scaleLinear()
-                    .domain(d3.extent(data, d => d.weekDay))
+        let scaleX = d3.scalePoint()
+                    //.domain(d3.extent(data, d => d.weekDay))
+                    .domain([1,2,3,4,5,6,0])
                     .range([0 + this.margin.left, this.width - this.margin.right]),
 
             yDomain = d3.extent(data, d => d.mobility_change_from_baseline),
@@ -86,8 +87,15 @@ class MobilityChangesWeeksChart extends Component {
                     [-30, 0, 20], 
                     d3.interpolateRgb("rgb(207, 216, 220)", "#4eeca3")
                 ).clamp(true),
-            
-            lastWeek = +_.last(_.keys(_.groupBy(data, 'week'))),
+
+            // last week is the last complete week, so we for sure render a whole line
+            lastWeek =    _.chain(data)
+                .groupBy('week')
+                .values()
+                .findLast(d => d.length === 7)
+                .first()
+                .get('week')
+                .value(),
 
             line = d3.line()
                     .x( d => scaleX(d.weekDay) )
@@ -157,14 +165,73 @@ class MobilityChangesWeeksChart extends Component {
                 this.height - this.margin.bottom
             ]);
 
+        let highlightWeek = selection => {
 
+            selection.clone()
+                .attr('class', "weekly-line-border")
+                .attr('stroke-width', scaleStrokeWidth(lastWeek)+ 7)
+                .attr('stroke-opacity', 1)
+                .attr('stroke', 'whitesmoke')
+                .raise();
+            
+            selection
+                .attr('stroke', 'rgb(99, 69, 180)')
+                .attr('stroke-width', 3)
+                .attr('stroke-opacity', 1)
+                .raise();
+        }
+
+        let unhighlightWeek = selection => {
+            selection
+                .attr('stroke', d => (new Date(_.first(d).date)).getFullYear() === 2021? '#01e299':'#666666') //'#f86a6f')
+                .attr('stroke-width', d => scaleStrokeWidth(_.first(d).week) )
+                .attr('stroke-opacity', 0.3);
+            graph.selectAll(".weekly-line-border").remove();
+        };
+
+        let addLastWeekLabel = () => {
+            let datum = _.last(
+                graph
+                    .selectAll(".weekly-line")
+                    .filter(d => _.first(d).week === lastWeek)
+                    .datum()
+            );
+            
+            graph.append('text')
+                .attr('x', scaleX(datum.weekDay))
+                .attr('y', scaleY(datum.mobility_change_from_baseline))
+                .attr('dy', -5)
+                .attr('text-anchor', "end")
+                .attr('fill', 'rgb(99, 69, 180)')
+                .attr('font-size', 10)
+                .attr('class', 'last-week-label text-shadow')
+                .text(formatDate(new Date(datum.date)))
+        };
+        let removeLastWeekLabel = () => {
+            graph.select('.last-week-label').remove();
+        }
+
+        
+        // sort by week day, make it start on Monday and remove last week if it's partial
+        let sortedData = _.values(_.groupBy(data, 'week'))
+            .map( d => {
+                return _.drop(d.sort()).concat(_.first(d));
+            });
+
+            //console.log(_.last(sortedData).length < 7)
+//        if(_.last(sortedData).length < 7)
+//            sortedData = _.slice(sortedData, 0, sortedData.length-1);
+        
+        //console.log(sortedData);
+
+        // draw all weekly lines
         graph.append('g')
             .attr("fill", "none")
             //.attr("stroke", "url(#" + gradient + ")")
             .attr("stroke-linejoin", "round")
             .attr("stroke-linecap", "round")
             .selectAll('path')
-            .data( _.values(_.groupBy(data, 'week')) )
+            .data(sortedData)
                 .join("path")
                 .attr("class", "weekly-line")
                 .attr("d", d => line(d))
@@ -174,6 +241,14 @@ class MobilityChangesWeeksChart extends Component {
                 .attr('stroke-width', d => scaleStrokeWidth(_.first(d).week) )
                 .attr('stroke-opacity', 0.3 ) // d => scaleStrokeOpacity(_.first(d).week) )
 
+        // highlight last week by default
+        highlightWeek(
+            graph.selectAll(".weekly-line")
+                .filter(d => _.first(d).week === lastWeek)
+        );
+        addLastWeekLabel();
+        
+        // tooltip
         let callout = (g, value) => {
                 if (!value) return g.style("display", "none");
 
@@ -207,6 +282,23 @@ class MobilityChangesWeeksChart extends Component {
                     path.attr("d", `M${-w / 2 - 10},5H-5l5,-5l5,5H${w / 2 + 10}v${h + 20}h-${w + 20}z`);
         }
 
+
+        graph
+            .on('mouseenter', () => {
+                unhighlightWeek(
+                    graph.selectAll(".weekly-line")
+                        .filter(d => _.first(d).week === lastWeek)
+                );
+                removeLastWeekLabel();
+            })
+            .on('mouseleave', () => {
+                highlightWeek(
+                    graph.selectAll(".weekly-line")
+                        .filter(d => _.first(d).week === lastWeek)
+                );
+                addLastWeekLabel();               
+            });
+
         // add tooltip
         const tooltip = this.svg.append("g");
 
@@ -238,29 +330,21 @@ class MobilityChangesWeeksChart extends Component {
                 lineVoronoied = graph.selectAll(".weekly-line")
                     .filter(d => _.first(d).week === value.week);
 
-                lineVoronoied.clone()
-                    .attr('class', "weekly-line-border")
-                    .attr('stroke-width', scaleStrokeWidth(lastWeek)+ 7)
-                    .attr('stroke-opacity', 1)
-                    .attr('stroke', 'whitesmoke')
-                    .raise();
-                
-                lineVoronoied
-                    .attr('stroke', 'rgb(99, 69, 180)')
-                    .attr('stroke-width', 3)
-                    .attr('stroke-opacity', 1)
-                    .raise();
+                highlightWeek(lineVoronoied);
             })
             .on("mouseleave", function() {
                 tooltip.call(callout, null);
-                lineVoronoied
-                    .attr('stroke', d => (new Date(_.first(d).date)).getFullYear() === 2021? '#01e299':'#666666') //'#f86a6f')
-                    .attr('stroke-width', d => scaleStrokeWidth(_.first(d).week) )
-                    .attr('stroke-opacity', 0.3);
-                graph.selectAll(".weekly-line-border").remove();
+                unhighlightWeek(lineVoronoied)
             });
 
         // add baseline
+        graph.append('line')
+            .attr('x1', this.margin.left - 10)
+            .attr('x2', this.width - this.margin.right + 10)
+            .attr('y1', scaleY(0))
+            .attr('y2', scaleY(0))
+            .attr("stroke", "whitesmoke")
+            .attr('stroke-width', 2)
         graph.append('line')
             .attr('x1', this.margin.left - 10)
             .attr('x2', this.width - this.margin.right + 10)

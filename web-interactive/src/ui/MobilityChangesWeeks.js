@@ -15,6 +15,7 @@ class MobilityChangesWeeks extends Component {
         return <Container fluid>
             <section>
                 <h1>Mobility Changes</h1>
+               
                 {
                     _.chunk(_.toPairs(MOBILITY_CATEGORIES), 3).map( (chunk,i) => <Row key={i}>
                         {

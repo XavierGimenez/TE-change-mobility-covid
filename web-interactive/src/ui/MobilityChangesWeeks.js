@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { MOBILITY_CATEGORIES } from '../common/constants';
 import * as _ from 'lodash';
-import MobilityChangesWeeksChart from './MobiliyChangesWeeksChart';
+import MobilityChangesWeeksChart from './MobilityChangesWeeksChart';
 
 
 

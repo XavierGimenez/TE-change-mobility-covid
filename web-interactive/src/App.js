@@ -1,11 +1,13 @@
 import { React, Component } from 'react';
 import './App.css';
 import MobilityChangesWeeks from './ui/MobilityChangesWeeks';
+import MobilityVsReproductionRate from './ui/MobilityVsReproductionRate';
 import { Fragment } from 'react';
 import { Provider } from './context/Provider';
 import { Context } from './context/Context';
 
 import * as d3 from 'd3';
+
 
 class App extends Component {
 
@@ -45,6 +47,7 @@ class App extends Component {
                     <Context.Consumer>
                         {
                             context => <Fragment>
+                                <MobilityVsReproductionRate {...context}/>
                                 <MobilityChangesWeeks {...context}/>
                             </Fragment>
                         }

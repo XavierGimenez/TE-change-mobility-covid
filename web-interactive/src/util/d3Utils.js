@@ -1,4 +1,6 @@
-export const textWrap = (text, wrapWidth, yAxisAdjustment = 0) {
+import * as d3 from 'd3';
+
+export const textWrap = function(text, wrapWidth, yAxisAdjustment = 0) {
     text.each(function() {
       var text = d3.select(this),
           words = text.text().split(/\s+/).reverse(),

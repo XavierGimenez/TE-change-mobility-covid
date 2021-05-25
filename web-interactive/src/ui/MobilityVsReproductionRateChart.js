@@ -346,7 +346,6 @@ class MobilityVsReproductionRateChart extends Component {
         // finally, apply a stroke-dasharray of the correct length
         this.timeLine.attr("stroke-dasharray", [l, this.timeLine.node().getTotalLength() - l]);
 
-
         // axis, axis labels (once)
         if(_.isNil(prevData)) {
             this.axisLabels(graph, scaleX, scaleY);

@@ -7,13 +7,14 @@ import { Provider } from './context/Provider';
 import { Context } from './context/Context';
 
 import * as d3 from 'd3';
+import MobilityVsReproductionRateScroller from './ui/MobilityVsReproductionRateScroller';
 
 
 class App extends Component {
 
 
     constructor(props) {
-        super(props);
+        super(props);        
         this.state = {};
     }
 
@@ -40,6 +41,7 @@ class App extends Component {
 
     render() {
         let { data } = this.state;
+
         return (
             <Fragment>
             {
@@ -47,6 +49,10 @@ class App extends Component {
                     <Context.Consumer>
                         {
                             context => <Fragment>
+                                <div style={{height:"10vh"}}>
+                                    A first Block
+                                </div>            
+                                <MobilityVsReproductionRateScroller {...context}/>
                                 <MobilityVsReproductionRate {...context}/>
                                 <MobilityChangesWeeks {...context}/>
                             </Fragment>

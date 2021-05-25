@@ -58,26 +58,45 @@ class MobilityVsReproductionRateChart extends Component {
     // check visibilty of the storytelling captions
     evaluateCaptions() {
         let { step, stepProgress, data } = this.props;
-        let { scaleX, scaleY } = this;
 
         console.log(step, stepProgress);
         
         this.showLineAt(0);
+        this.tooltipDynamic.call(callout, null);
 
         // first date point?        
-        if( step === 10 && _.inRange(stepProgress, 0, 0.5) ) {
+        if( step === 10 && _.inRange(stepProgress, 0, 0.22) )
             this.showTooltipDynamic(0);
-        } else {
-            this.tooltipDynamic.call(callout, null);
-        }
         
         // 
-        if( step === 10 && _.inRange(stepProgress, 0.5, 0.66) ) {
+        if( step === 10 && _.inRange(stepProgress, 0.22, 0.43) ) {
            this.showLineAt(2)
            this.showTooltipDynamic(2);
-        } else {
+        }
 
-        } 
+        //
+        if( step === 10 && _.inRange(stepProgress, 0.43, 0.65) ) {
+            this.showLineAt(5)
+            this.showTooltipDynamic(5);
+        }
+
+        //
+        if( step === 10 && _.inRange(stepProgress, 0.65, 0.8) ) {
+            this.showLineAt(13)
+            this.showTooltipDynamic(13);
+        }
+
+        //
+        if( step === 10 && _.inRange(stepProgress, 0.8, 0.9) ) {
+            this.showLineAt(19)
+            this.showTooltipDynamic(19);
+        }
+
+        //
+        if( step === 10 && _.inRange(stepProgress, 0.91, 0.99) ) {
+            this.showLineAt(data.length)
+            this.showTooltipDynamic(data.length);
+        }
     }
 
 

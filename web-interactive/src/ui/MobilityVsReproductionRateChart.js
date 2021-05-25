@@ -26,6 +26,14 @@ class MobilityVsReproductionRateChart extends Component {
 
 
 
+    componentDidUpdate(prevProps) {
+
+        if(prevProps.mobilityCategory !== this.props.mobilityCategory) {
+            this.updateChart(this.props.data, prevProps.data);
+        }
+    }
+
+
     createChart() {
         const size = this.elementRef.current.getBoundingClientRect();
         
@@ -37,6 +45,12 @@ class MobilityVsReproductionRateChart extends Component {
             .attr('width', this.width)
             .attr('height', this.height)
             .style('overflow', 'visible');
+        
+        this.contours = this.svg
+            .append("g")
+            .attr("fill", "none")
+            .attr("stroke", "whitesmoke") //"#f3b6a3")
+            .attr("stroke-linejoin", "round")
     }
 
 
@@ -170,65 +184,49 @@ class MobilityVsReproductionRateChart extends Component {
     }
 
 
-    updateChart(_data) {
-
-        // decide how often we pick the data points
-        let data = _.filter(_data, d => (new Date(d.date)).getDay() === 1 );
+    updateChart(data, prevData) {
         
+        // note on axis domains:
+        // since we need smooth interpolations between contours, 
+        // better to define fixed domains, so when new data appears
+        // no new domain is set and our old contour does not move, just
+        // transitions to the new one
         let scaleX = d3.scaleLinear()
                         .domain(
-                            // put some positive margin in the mobility axis 
-                            d3.extent(data, d => d.mobility_change_from_baseline)
+                            [-100, 50]
+                            /*d3.extent(data, d => d.mobility_change_from_baseline)
                                 .map( (d,i) => {
                                     return i === 0? d:(d<10? 10:d)
-                                })
+                            })*/
                         )
                         .range([0 + this.margin.left, this.width - this.margin.right]),
             scaleY = d3.scaleLinear()
-                        .domain([0, d3.max(data, d => d.reproduction_rate)])
+                        .domain(
+                            [0, 3.5]
+                            //[0, d3.max(data, d => d.reproduction_rate)]
+                        )
                         .range([this.height - this.margin.bottom, this.margin.top]),
-            contours = d3.contourDensity()
+            contoursFunc = d3.contourDensity()
                         .x(d => scaleX(d.mobility_change_from_baseline))
                         .y(d => scaleY(d.reproduction_rate))
                         .size([this.width, this.height])
                         .bandwidth(30)
-                        .thresholds(30)
-                        (data),
-            //colors = ["#f8f8ee","#e66b4c"],
+                        //.thresholds(30),
+                        // need to understand why these values are not greater ones
+                        .thresholds(_.range(1, 30, 1).map(d => d/1000)),
             colors = ["whitesmoke","#e66b4c"],
             scaleColorLinear = d3.scaleLinear()
                 .domain(d3.range(0,1,1/colors.length))
                 .range(colors)
-                .interpolate(d3.interpolateLab),
-            threshold_domain = contours.map(d => d.value),
+                .interpolate(d3.interpolateLab)
+                .clamp(true),
+            
             line = d3.line()
                     .x(d => scaleX(d.mobility_change_from_baseline))
                     .y(d => scaleY(d.reproduction_rate))
-                    .curve(d3.curveCardinal.tension(0.5)),
-            scaleColor = d3.scaleOrdinal()
-                    .domain(contours.map(d => d.value))
-                    .range(d3.quantize(scaleColorLinear, threshold_domain.length));
+                    .curve(d3.curveCardinal.tension(0.5));
 
-        // axis                 
-        let yAxis = g => g
-            .attr("transform", `translate(${this.margin.left},0)`)
-            .call(d3.axisLeft(scaleY))
-            .call( 
-                g => g.selectAll('*')
-                .attr('stroke-width', 0)
-                .attr('stroke', '#d0d0d0')
-            );
-        let xAxis = g => g
-            .attr("transform", `translate(0,${this.height - this.margin.bottom})`)
-            .call(d3.axisBottom(scaleX))
-            .call( 
-                g => g.selectAll('*')
-                    .attr('stroke-width', 0)
-                    .attr('stroke', '#d0d0d0')
-            );
-        this.svg.append("g").call(xAxis);
-        this.svg.append("g").call(yAxis);
-
+        // graph placeholder
         let graph = this.svg.append('g');
 
         // threshold lines
@@ -252,22 +250,88 @@ class MobilityVsReproductionRateChart extends Component {
             .style("stroke", '#c0c0c0')//'#e8e8d7')
             .style('stroke-opacity', 1);
 
-    
-        // countours
-        graph.append("g")
-            .attr("fill", "none")
-            .attr("stroke", "whitesmoke") //"#f3b6a3")
-            .attr("stroke-linejoin", "round")
-            .selectAll("path")
-            .data(contours)
-                .enter().append("path")
-                    .attr("stroke-width", 1)
-                    .attr("stroke-opacity", (d, i) => 0.7 - (i / 10) )
-                .attr("fill", d => scaleColor(d.value))
-                .attr("d", d3.geoPath());
+        const t = this.svg.transition().duration(750);
+        
+        // transition are going to be done through a single tween, 
+        // so manually keep track of old/new data points, since
+        // we will play with the weight values in the contours
+        // nice idea from https://observablehq.com/@plmrry/animated-contours
+        const allData = data
+            .map(d => { return {...d, type:'enter'}})
+            .concat(
+                prevData? prevData.map(d => { return {...d, type:'exit'}; }) : []
+            );
 
-        // axis labels
-        this.axisLabels(graph, scaleX, scaleY);
+        // countours
+        // Start a global transition
+        d3.transition()
+            .duration(1000)
+            .tween("contours", d => {
+                return tweenValue => {
+                    const inverse = 1 - tweenValue;
+
+                    // Set the weight accessor to return the tween value
+                    // Entering points will gradually increase their effect on the contour generator.
+                    // Exiting points will gradually decrease their effect on the contour generator.
+                    contoursFunc.weight(d => d.type === "enter" ? tweenValue : inverse);
+
+                    const contours = contoursFunc(allData);
+                    
+                    const threshold_domain = contours.map(d => d.value),
+                        scaleColor = d3.scaleOrdinal()
+                                .domain(contours.map(d => d.value))
+                                .range(d3.quantize(scaleColorLinear, threshold_domain.length)),
+                        contourPaths = this.svg.selectAll("path.path-contour").data(contours);
+
+                    contourPaths.exit().remove();
+                    contourPaths
+                        .enter()
+                        .append("path")
+                        .attr('class', 'path-contour')
+                            .attr("stroke-width", 1)
+                            .attr('stroke', 'whitesmoke')
+                            //.style('mix-blend-mode','difference')
+                            .attr("stroke-opacity", (d, i) => 1 - (i / 10) )
+                            .attr('fill-opacity', 0.75)
+                            .attr("fill", d => scaleColor(d.value))
+
+                    contourPaths.attr("d", d3.geoPath());
+                };
+            });        
+
+        // correlation line
+        /*this.svg.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("stroke", '#222222') //gradient)
+            .attr('stroke-opacity', 1)
+            .attr("stroke-width", 2)
+            .attr("stroke-linejoin", "round")
+            .attr("stroke-linecap", "round")
+            .attr("d", line)
+            .raise();*/
+
+        // axis, axis labels (once)
+        if(_.isNil(prevData)) {
+            this.axisLabels(graph, scaleX, scaleY);
+                    // axis                 
+            let yAxis = g => g.attr("transform", `translate(${this.margin.left},0)`)
+                .call(d3.axisLeft(scaleY))
+                .call( 
+                    g => g.selectAll('*')
+                    .attr('stroke-width', 0)
+                    .attr('stroke', '#d0d0d0')
+                );
+            let xAxis = g => g.attr("transform", `translate(0,${this.height - this.margin.bottom})`)
+                .call(d3.axisBottom(scaleX))
+                .call( 
+                    g => g.selectAll('*')
+                        .attr('stroke-width', 0)
+                        .attr('stroke', '#d0d0d0')
+                );
+            this.svg.append("g").call(xAxis);
+            this.svg.append("g").call(yAxis);
+        }
     }
 
 

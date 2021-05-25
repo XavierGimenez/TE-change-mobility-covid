@@ -12,10 +12,8 @@ export const textWrap = function(text, wrapWidth, yAxisAdjustment = 0) {
           dy = parseFloat(text.attr("dy")) - yAxisAdjustment,
           tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", `${dy}em`);
       while (word = words.pop()) {
-        console.log(word)
         line.push(word);
         tspan.text(line.join(" "));
-        console.log(tspan.text(), tspan.node().getComputedTextLength(), wrapWidth)
         if (tspan.node().getComputedTextLength() > wrapWidth) {
   
           line.pop();

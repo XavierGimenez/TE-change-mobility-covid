@@ -1,7 +1,6 @@
 import { React, Component } from 'react';
 import './App.css';
 import MobilityChangesWeeks from './ui/MobilityChangesWeeks';
-import MobilityVsReproductionRate from './ui/MobilityVsReproductionRate';
 import { Fragment } from 'react';
 import { Provider } from './context/Provider';
 import { Context } from './context/Context';
@@ -53,7 +52,6 @@ class App extends Component {
                                     A first Block
                                 </div>            
                                 <MobilityVsReproductionRateScroller {...context}/>
-                                <MobilityVsReproductionRate {...context}/>
                                 <MobilityChangesWeeks {...context}/>
                             </Fragment>
                         }

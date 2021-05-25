@@ -12,35 +12,21 @@ class MobilityVsReproductionRate extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            mobilityCategory: _.first(_.keys(MOBILITY_CATEGORIES))
-        };
+        this.state = {};
     }
 
 
 
     render() {
-        let { data } = this.props;
-        let { mobilityCategory } = this.state;
+        let { 
+            data,
+            mobilityCategory 
+        } = this.props;
 
         return <Container fluid>
             <section>
                 <h1>Mobility Vs Reproduction</h1>
                 <Row>
-                    <Col xs={3}>
-                        <ButtonGroup vertical>
-                        {
-                            _.toPairs(MOBILITY_CATEGORIES)
-                                .map( (category, i) => <Button
-                                    active={category[0] === mobilityCategory} 
-                                    variant="outline-secondary" 
-                                    key={i}
-                                    onClick={() => this.setState({mobilityCategory:category[0]})}>
-                                        { category[1] }
-                                    </Button>)
-                        }
-                        </ButtonGroup>
-                    </Col>
                     <Col>
                         <MobilityVsReproductionRateChart 
                             mobilityCategory={mobilityCategory} 
@@ -53,7 +39,6 @@ class MobilityVsReproductionRate extends Component {
                         />
                     </Col>
                 </Row>
-                
             </section>            
         </Container>
     }

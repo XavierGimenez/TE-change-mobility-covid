@@ -3,6 +3,9 @@ import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
 import * as _ from 'lodash';
 import { Scrollama, Step} from 'react-scrollama';
 
+import { MOBILITY_CATEGORIES } from '../common/constants';
+import MobilityVsReproductionRate from './MobilityVsReproductionRate';
+
 
 class MobilityVsReproductionRateScroller extends Component {
 
@@ -11,9 +14,11 @@ class MobilityVsReproductionRateScroller extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            // scrollama data
             data: 0,
             steps: [10, 20, 30],
-            progress: 0            
+            progress: 0,    
+            mobilityCategory: _.first(_.keys(MOBILITY_CATEGORIES))  
         };
     }
 
@@ -34,7 +39,11 @@ class MobilityVsReproductionRateScroller extends Component {
 
 
     render() {
-        const { data, steps, progress } = this.state;
+        const { 
+            data, 
+            steps, 
+            progress,
+            mobilityCategory } = this.state;
 
 
 
@@ -46,9 +55,7 @@ class MobilityVsReproductionRateScroller extends Component {
                         onStepExit={this.onStepExit}
                         progress
                         onStepProgress={this.onStepProgress}
-                        offset={0.3}
-                        debug
-                        >
+                        offset={0.3}>
                             <Step data={10}>
                                 <div className="step">
                                     <p>Lorem ipsum est</p>
@@ -59,23 +66,25 @@ class MobilityVsReproductionRateScroller extends Component {
                                     <p>Lorem ipsum est</p>
                                 </div>
                             </Step>
-                        {/*
-                            steps.map(value => {
-                                return (
-                                <Step data={value} key={value}>
-                                    <div className="step">
-                                    <p>step value: {value}</p>
-                                    <p>
-                                        {Math.round(progress * 1000) / 10 + '%'}
-                                    </p>
-                                    </div>
-                                </Step>);
-                            })
-                        */}
+                            <Step data={30}>
+                            <ButtonGroup vertical>
+                            {
+                                _.toPairs(MOBILITY_CATEGORIES)
+                                    .map( (category, i) => <Button
+                                        active={category[0] === mobilityCategory} 
+                                        variant="outline-secondary" 
+                                        key={i}
+                                        onClick={() => this.setState({mobilityCategory:category[0]})}>
+                                            { category[1] }
+                                        </Button>)
+                            }
+                            </ButtonGroup>
+                            </Step>
                     </Scrollama>
                 </div>
                 <div className="graphic">
                     <p>{data}</p>
+                    <MobilityVsReproductionRate mobilityCategory={mobilityCategory} {...this.props}/>
                 </div>
 
             </div>

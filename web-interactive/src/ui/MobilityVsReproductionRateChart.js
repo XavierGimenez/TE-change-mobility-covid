@@ -46,11 +46,8 @@ class MobilityVsReproductionRateChart extends Component {
             .attr('height', this.height)
             .style('overflow', 'visible');
         
-        this.contours = this.svg
-            .append("g")
-            .attr("fill", "none")
-            .attr("stroke", "whitesmoke") //"#f3b6a3")
-            .attr("stroke-linejoin", "round")
+        this.placeHolderContours = this.svg.append('g');
+        this.placeHolderLine = this.svg.append('g');
     }
 
 
@@ -214,7 +211,7 @@ class MobilityVsReproductionRateChart extends Component {
                         //.thresholds(30),
                         // need to understand why these values are not greater ones
                         .thresholds(_.range(1, 30, 1).map(d => d/1000)),
-            colors = ["whitesmoke","#e66b4c"],
+            colors = ["whitesmoke","#4eeca3"],
             scaleColorLinear = d3.scaleLinear()
                 .domain(d3.range(0,1,1/colors.length))
                 .range(colors)
@@ -224,7 +221,11 @@ class MobilityVsReproductionRateChart extends Component {
             line = d3.line()
                     .x(d => scaleX(d.mobility_change_from_baseline))
                     .y(d => scaleY(d.reproduction_rate))
-                    .curve(d3.curveCardinal.tension(0.5));
+                    .curve(d3.curveCardinal.tension(0.5)),
+            lineM = d3.line()
+                    .x(d => scaleX(d.mobility_change_from_baseline))
+                    .y(d => scaleY(d.reproduction_rate))
+                    .curve(d3.curveCardinalOpen);
 
         // graph placeholder
         let graph = this.svg.append('g');
@@ -281,7 +282,7 @@ class MobilityVsReproductionRateChart extends Component {
                         scaleColor = d3.scaleOrdinal()
                                 .domain(contours.map(d => d.value))
                                 .range(d3.quantize(scaleColorLinear, threshold_domain.length)),
-                        contourPaths = this.svg.selectAll("path.path-contour").data(contours);
+                        contourPaths = this.placeHolderContours.selectAll("path.path-contour").data(contours);
 
                     contourPaths.exit().remove();
                     contourPaths
@@ -300,16 +301,51 @@ class MobilityVsReproductionRateChart extends Component {
             });        
 
         // correlation line
-        /*this.svg.append("path")
-            .datum(data)
-            .attr("fill", "none")
-            .attr("stroke", '#222222') //gradient)
-            .attr('stroke-opacity', 1)
-            .attr("stroke-width", 2)
-            .attr("stroke-linejoin", "round")
-            .attr("stroke-linecap", "round")
-            .attr("d", line)
-            .raise();*/
+        this.timeLine = this.placeHolderLine.append("path");
+        this.timeLine.datum(data)
+                .attr("fill", "none")
+                .attr("stroke", 'rgb(99, 69, 180)') //gradient)
+                .attr('stroke-opacity',0.1)
+                .attr("stroke-width", 2)
+                .attr("d", line)
+                .raise();
+
+        const n = 3;//data.length;
+        const points = this.svg.selectAll('circle')
+            .data(data.slice(0, Math.ceil(n+1)))
+            .join('circle')
+            .attr('cx', d => scaleX(d.mobility_change_from_baseline))
+            .attr('cy', d => scaleY(d.reproduction_rate))
+            .attr('r', 2)
+            //.attr('stroke', 'whitesmoke')
+            //.attr('stroke-width', 3)
+            .attr('fill', 'rgb(99, 69, 180)');
+
+        const pathB = this.svg.append("path").attr("fill", "none").attr("stroke", "none")
+        const pathC = this.svg.append("path").attr("fill", "none").attr("stroke", "none")
+
+        pathB.attr(
+            "d",
+            lineM(
+            [data[0]].concat(data).concat([data[data.length - 1]]).slice(0, 2 + Math.floor(n + 1))
+            )
+        );
+        pathC.attr(
+            "d",
+            lineM(
+            [data[0]].concat(data).concat([data[data.length - 1]]).slice(0, 2 + Math.ceil(n + 1))
+            )
+        );
+        // We're using two paths drawn with a *curveCardinalOpen* on the same data with fake ends.
+        // These paths are almost exactly superimposed with our *curveCardinal* path, so we can
+        // measure them and interpolate!
+        const lB = pathB.node().getTotalLength();
+        const lC = pathC.node().getTotalLength();
+        const l = lB + (lC - lB) * (n - Math.floor(n));
+
+        // finally, apply a stroke-dasharray of the correct length
+        this.timeLine.attr("stroke-dasharray", [l, this.timeLine.node().getTotalLength() - l]);
+
 
         // axis, axis labels (once)
         if(_.isNil(prevData)) {

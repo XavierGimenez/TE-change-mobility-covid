@@ -8,6 +8,7 @@ import {
 import {
     formatDate2
 } from '../util/timeUtils';
+import { join } from 'lodash';
 
 
 class MobilityVsReproductionRateChart extends Component {
@@ -40,28 +41,103 @@ class MobilityVsReproductionRateChart extends Component {
 
 
 
-    // check visibilty of the storytelling captions
-    evaluateCaptions() {
-        let { step, stepProgress } = this.props;
-        console.log(step, stepProgress);
-        // first date point?        
-        if( step === 10 && _.inRange(stepProgress, 0, 0.3) ) {
-            console.log("yoyoyoyoyoyo")
-            let firstPoint = this.svg.select('circle.date-points'),
-            x = firstPoint.attr('cx'),
-            y = Math.round(firstPoint.attr('cy'))+ 10;
+    showTooltipDynamic(n) {
+        const data = this.props.data.slice(0, Math.ceil(n+1)),
+            datum = _.last(data);
+        
+        let x = this.scaleX(datum.mobility_change_from_baseline),
+            y = Math.round(this.scaleY(datum.reproduction_rate)) + 10;
 
         this.tooltipDynamic
             .attr("transform", `translate(${x},${y})`)
-            .call(
-                callout, 
-                `${formatDate2(new Date(firstPoint.datum().date))}`
-            );
+            .call(callout, `${formatDate2(new Date(datum.date))}`);
+    }
+
+
+
+    // check visibilty of the storytelling captions
+    evaluateCaptions() {
+        let { step, stepProgress, data } = this.props;
+        let { scaleX, scaleY } = this;
+
+        console.log(step, stepProgress);
+        
+        this.showLineAt(0);
+
+        // first date point?        
+        if( step === 10 && _.inRange(stepProgress, 0, 0.5) ) {
+            this.showTooltipDynamic(0);
         } else {
             this.tooltipDynamic.call(callout, null);
         }
         
+        // 
+        if( step === 10 && _.inRange(stepProgress, 0.5, 0.66) ) {
+           this.showLineAt(2)
+           this.showTooltipDynamic(2);
+        } else {
+
+        } 
     }
+
+
+    showLineAt(n) {
+        const { data } = this.props;
+
+        const lineM = d3.line()
+                .x(d => this.scaleX(d.mobility_change_from_baseline))
+                .y(d => this.scaleY(d.reproduction_rate))
+                .curve(d3.curveCardinalOpen),
+            self = this;
+
+        // show date points
+        this.placeHolderDatePoints.selectAll('circle').remove();
+        this.placeHolderDatePoints.selectAll('circle')
+            .data(data.slice(0, Math.ceil(n+1)))
+            .join('circle')
+                .attr('class', 'date-points')
+                .attr('cx', d => this.scaleX(d.mobility_change_from_baseline))
+                .attr('cy', d => this.scaleY(d.reproduction_rate))
+                .attr('r', 2)
+                .attr('fill', 'rgb(99, 69, 180)')
+                .style('cursor', 'pointer')
+                .on("mouseenter", function(event) {
+                    const pointer = d3.pointer(event, this);
+                    const value = event.target.__data__;
+    
+                    self.tooltip
+                        .attr("transform", `translate(${pointer[0]},${pointer[1] + 15})`)
+                        .call(
+                            callout, 
+                            `${formatDate2(new Date(value.date))}`
+                        );
+                })
+                .on("mouseleave", function() {
+                    self.tooltip.call(callout, null);
+                });
+
+        this.pathB.attr(
+            "d",
+            lineM(
+                [data[0]].concat(data).concat([data[data.length - 1]]).slice(0, 2 + Math.floor(n + 1))
+            )
+        );
+        this.pathC.attr(
+            "d",
+            lineM(
+                [data[0]].concat(data).concat([data[data.length - 1]]).slice(0, 2 + Math.ceil(n + 1))
+            )
+        );
+        // We're using two paths drawn with a *curveCardinalOpen* on the same data with fake ends.
+        // These paths are almost exactly superimposed with our *curveCardinal* path, so we can
+        // measure them and interpolate!
+        const lB = this.pathB.node().getTotalLength();
+        const lC = this.pathC.node().getTotalLength();
+        const l = lB + (lC - lB) * (n - Math.floor(n));
+
+        // finally, apply a stroke-dasharray of the correct length
+        this.timeLine.attr("stroke-dasharray", [l, this.timeLine.node().getTotalLength() - l]);        
+     }
 
 
 
@@ -77,15 +153,48 @@ class MobilityVsReproductionRateChart extends Component {
             .attr('height', this.height)
             .style('overflow', 'visible');
         
+        // add layers
         this.placeHolderContours = this.svg.append('g');
         this.placeHolderLine = this.svg.append('g');
-
+        this.placeHolderDatePoints =  this.svg.append('g');
         this.tooltip = this.svg.append('g');
         this.tooltipDynamic = this.svg.append('g');
+
+        // hidden paths to calculate distances to cut the correlation line
+        this.pathB = this.svg.append("path");
+        this.pathC = this.svg.append("path");
+  
+        [this.pathB, this.pathC].forEach(path => path
+            .attr('class','fake-path')
+            .attr("fill", "none")
+            .attr("stroke", "none")
+        );
+
+        // Scales. Note on axis domains:
+        // since we need smooth interpolations between contours, 
+        // better to define fixed domains, so when new data appears
+        // no new domain is set and our old contour does not move, just
+        // transitions to the new one
+        this.scaleX = d3.scaleLinear()
+                        .domain(
+                            [-100, 50]
+                            /*d3.extent(data, d => d.mobility_change_from_baseline)
+                                .map( (d,i) => {
+                                    return i === 0? d:(d<10? 10:d)
+                            })*/
+                        )
+                        .range([0 + this.margin.left, this.width - this.margin.right]);
+        
+        this.scaleY = d3.scaleLinear()
+                        .domain([0, 3.5])
+                        //([0, d3.max(data, d => d.reproduction_rate)])
+                        .range([this.height - this.margin.bottom, this.margin.top]);
     }
 
 
-    axisLabels(graph, scaleX, scaleY) {
+    axisLabels(graph) {
+        const { scaleX, scaleY } = this;
+
         const markerBoxWidth = 8,
             markerBoxHeight = 8,
             refX = markerBoxWidth / 2,
@@ -216,31 +325,10 @@ class MobilityVsReproductionRateChart extends Component {
 
 
     updateChart(data, prevData) {
-        let self = this;
-
-        // note on axis domains:
-        // since we need smooth interpolations between contours, 
-        // better to define fixed domains, so when new data appears
-        // no new domain is set and our old contour does not move, just
-        // transitions to the new one
-        let scaleX = d3.scaleLinear()
-                        .domain(
-                            [-100, 50]
-                            /*d3.extent(data, d => d.mobility_change_from_baseline)
-                                .map( (d,i) => {
-                                    return i === 0? d:(d<10? 10:d)
-                            })*/
-                        )
-                        .range([0 + this.margin.left, this.width - this.margin.right]),
-            scaleY = d3.scaleLinear()
-                        .domain(
-                            [0, 3.5]
-                            //[0, d3.max(data, d => d.reproduction_rate)]
-                        )
-                        .range([this.height - this.margin.bottom, this.margin.top]),
-            contoursFunc = d3.contourDensity()
-                        .x(d => scaleX(d.mobility_change_from_baseline))
-                        .y(d => scaleY(d.reproduction_rate))
+        
+        let contoursFunc = d3.contourDensity()
+                        .x(d => this.scaleX(d.mobility_change_from_baseline))
+                        .y(d => this.scaleY(d.reproduction_rate))
                         .size([this.width, this.height])
                         .bandwidth(30)
                         //.thresholds(30),
@@ -254,13 +342,9 @@ class MobilityVsReproductionRateChart extends Component {
                 .clamp(true),
             
             line = d3.line()
-                    .x(d => scaleX(d.mobility_change_from_baseline))
-                    .y(d => scaleY(d.reproduction_rate))
-                    .curve(d3.curveCardinal.tension(0.5)),
-            lineM = d3.line()
-                    .x(d => scaleX(d.mobility_change_from_baseline))
-                    .y(d => scaleY(d.reproduction_rate))
-                    .curve(d3.curveCardinalOpen);
+                    .x(d => this.scaleX(d.mobility_change_from_baseline))
+                    .y(d => this.scaleY(d.reproduction_rate))
+                    .curve(d3.curveCardinal.tension(0.5));
 
         // graph placeholder
         let graph = this.svg.append('g');
@@ -269,16 +353,16 @@ class MobilityVsReproductionRateChart extends Component {
         graph.append('line')
             .attr('class','treshold-line')
             .attr("x1", this.margin.left)
-            .attr("y1", scaleY(1))
+            .attr("y1", this.scaleY(1))
             .attr("x2", this.width - this.margin.right)
-            .attr("y2", scaleY(1));
+            .attr("y2", this.scaleY(1));
         
         graph.append('line')
             .attr('class','treshold-line')
             .attr("y1", this.margin.top)
-            .attr("x1", scaleX(0))
+            .attr("x1", this.scaleX(0))
             .attr("y2", this.height - this.margin.bottom)
-            .attr("x2", scaleX(0));
+            .attr("x2", this.scaleX(0));
         
         graph.selectAll('.treshold-line')
             .style("stroke-dasharray",[2, 2])
@@ -340,7 +424,7 @@ class MobilityVsReproductionRateChart extends Component {
         let myLine = this.timeLine.datum(data)
                 .attr("fill", "none")
                 .attr("stroke", 'rgb(99, 69, 180)') //gradient)
-                .attr('stroke-opacity',0.1)
+                .attr('stroke-opacity',1)
                 .attr("stroke-width", 2)
                 .attr("d", line)
                 .raise();
@@ -350,72 +434,19 @@ class MobilityVsReproductionRateChart extends Component {
             .attr("stroke-width", 6);
         myLine.raise();
 
-        
-        const circlePlaceholder = this.svg.append('g');
-
-        const n = 2; //data.length;
-        const points = circlePlaceholder.selectAll('circle')
-            .data(data.slice(0, Math.ceil(n+1)))
-            .join('circle')
-            .attr('class', 'date-points')
-            .attr('cx', d => scaleX(d.mobility_change_from_baseline))
-            .attr('cy', d => scaleY(d.reproduction_rate))
-            .attr('r', 2)
-            .attr('fill', 'rgb(99, 69, 180)')
-            .style('cursor', 'pointer')
-            .on("mouseenter", function(event) {
-                const pointer = d3.pointer(event, this);
-                const value = event.target.__data__;
-
-                self.tooltip
-                    .attr("transform", `translate(${pointer[0]},${pointer[1] + 15})`)
-                    .call(
-                        callout, 
-                        `${formatDate2(new Date(value.date))}`
-                    );
-            })
-            .on("mouseleave", function() {
-                self.tooltip.call(callout, null);
-            });
-
-        const pathB = this.svg.append("path").attr("fill", "none").attr("stroke", "none")
-        const pathC = this.svg.append("path").attr("fill", "none").attr("stroke", "none")
-
-        pathB.attr(
-            "d",
-            lineM(
-            [data[0]].concat(data).concat([data[data.length - 1]]).slice(0, 2 + Math.floor(n + 1))
-            )
-        );
-        pathC.attr(
-            "d",
-            lineM(
-            [data[0]].concat(data).concat([data[data.length - 1]]).slice(0, 2 + Math.ceil(n + 1))
-            )
-        );
-        // We're using two paths drawn with a *curveCardinalOpen* on the same data with fake ends.
-        // These paths are almost exactly superimposed with our *curveCardinal* path, so we can
-        // measure them and interpolate!
-        const lB = pathB.node().getTotalLength();
-        const lC = pathC.node().getTotalLength();
-        const l = lB + (lC - lB) * (n - Math.floor(n));
-
-        // finally, apply a stroke-dasharray of the correct length
-        this.timeLine.attr("stroke-dasharray", [l, this.timeLine.node().getTotalLength() - l]);
-
         // axis, axis labels (once)
         if(_.isNil(prevData)) {
-            this.axisLabels(graph, scaleX, scaleY);
+            this.axisLabels(graph);
                     // axis                 
             let yAxis = g => g.attr("transform", `translate(${this.margin.left},0)`)
-                .call(d3.axisLeft(scaleY))
+                .call(d3.axisLeft(this.scaleY))
                 .call( 
                     g => g.selectAll('*')
                     .attr('stroke-width', 0)
                     .attr('stroke', '#d0d0d0')
                 );
             let xAxis = g => g.attr("transform", `translate(0,${this.height - this.margin.bottom})`)
-                .call(d3.axisBottom(scaleX))
+                .call(d3.axisBottom(this.scaleX))
                 .call( 
                     g => g.selectAll('*')
                         .attr('stroke-width', 0)

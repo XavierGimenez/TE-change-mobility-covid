@@ -32,7 +32,6 @@ class MobilityVsReproductionRateScroller extends Component {
     };
     
     onStepProgress = ({ progress }) => {
-        console.log(progress)
         this.setState({ progress });
     };
 
@@ -55,14 +54,16 @@ class MobilityVsReproductionRateScroller extends Component {
                         onStepExit={this.onStepExit}
                         progress
                         onStepProgress={this.onStepProgress}
-                        offset={0.3}
-                        debug>
+                        offset={0.3}>
                             <Step data={10}>
                                 <div className="step step-1">
                                     <p>In march, with the reproduction rate at highest values, the infection was able to spread rapidly through the population </p>
                                     <p>{Math.round(progress * 1000) / 10 + '%'}</p>
                                     <p>
                                         Following weeks population -> severe lockdown, which Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                                    </p>
+                                    <p>
+                                        As a result of the lockdown, the reproduction r goes down. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                                     </p>
                                 </div>                                
                             </Step>

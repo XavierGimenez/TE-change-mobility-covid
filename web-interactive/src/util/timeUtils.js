@@ -37,3 +37,12 @@ export const formatDate = (date) => {
         timeZone: "UTC"
       });
 };
+
+export const formatDate2 = (date) => {
+    return date.toLocaleString("en", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        timeZone: "UTC"
+      });
+};

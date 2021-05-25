@@ -8,6 +8,10 @@ import {
     formatDate
 } from '../util/timeUtils';
 
+import {
+    callout
+} from '../util/d3Utils';
+
 
 
 class MobilityChangesWeeksChart extends Component {
@@ -249,7 +253,7 @@ class MobilityChangesWeeksChart extends Component {
         addLastWeekLabel();
         
         // tooltip
-        let callout = (g, value) => {
+        /*let callout = (g, value) => {
                 if (!value) return g.style("display", "none");
 
                    g
@@ -280,7 +284,7 @@ class MobilityChangesWeeksChart extends Component {
 
                     text.attr("transform", `translate(${-w / 2},${15 - y})`);
                     path.attr("d", `M${-w / 2 - 10},5H-5l5,-5l5,5H${w / 2 + 10}v${h + 20}h-${w + 20}z`);
-        }
+        }*/
 
 
         graph

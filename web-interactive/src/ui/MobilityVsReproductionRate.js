@@ -20,7 +20,9 @@ class MobilityVsReproductionRate extends Component {
     render() {
         let { 
             data,
-            mobilityCategory 
+            mobilityCategory,
+            step,
+            stepProgress
         } = this.props;
 
         return <Container fluid>
@@ -29,6 +31,8 @@ class MobilityVsReproductionRate extends Component {
                 <Row>
                     <Col>
                         <MobilityVsReproductionRateChart 
+                            step={step}
+                            stepProgress={stepProgress}
                             mobilityCategory={mobilityCategory} 
                             data={ 
                                 _.chain(data)

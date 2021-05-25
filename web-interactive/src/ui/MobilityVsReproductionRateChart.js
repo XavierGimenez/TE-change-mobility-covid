@@ -2,9 +2,12 @@ import React, { Component } from 'react';
 import * as _ from 'lodash';
 import * as d3 from 'd3';
 import {
+    callout,
     textWrap
 } from '../util/d3Utils';
-
+import {
+    formatDate2
+} from '../util/timeUtils';
 
 
 class MobilityVsReproductionRateChart extends Component {
@@ -27,18 +30,46 @@ class MobilityVsReproductionRateChart extends Component {
 
 
     componentDidUpdate(prevProps) {
-
+        
         if(prevProps.mobilityCategory !== this.props.mobilityCategory) {
             this.updateChart(this.props.data, prevProps.data);
         }
+
+        this.evaluateCaptions();        
     }
+
+
+
+    // check visibilty of the storytelling captions
+    evaluateCaptions() {
+        let { step, stepProgress } = this.props;
+        console.log(step, stepProgress);
+        // first date point?        
+        if( step === 10 && _.inRange(stepProgress, 0, 0.3) ) {
+            console.log("yoyoyoyoyoyo")
+            let firstPoint = this.svg.select('circle.date-points'),
+            x = firstPoint.attr('cx'),
+            y = Math.round(firstPoint.attr('cy'))+ 10;
+
+        this.tooltipDynamic
+            .attr("transform", `translate(${x},${y})`)
+            .call(
+                callout, 
+                `${formatDate2(new Date(firstPoint.datum().date))}`
+            );
+        } else {
+            this.tooltipDynamic.call(callout, null);
+        }
+        
+    }
+
 
 
     createChart() {
         const size = this.elementRef.current.getBoundingClientRect();
         
         this.width = size.width;
-        this.height = size.width * 0.5;
+        this.height = size.width * 0.75;
         this.margin = {top: 10, right:50, bottom: 180, left: 100};
                 
         this.svg = d3.select(this.node)
@@ -48,6 +79,9 @@ class MobilityVsReproductionRateChart extends Component {
         
         this.placeHolderContours = this.svg.append('g');
         this.placeHolderLine = this.svg.append('g');
+
+        this.tooltip = this.svg.append('g');
+        this.tooltipDynamic = this.svg.append('g');
     }
 
 
@@ -182,7 +216,8 @@ class MobilityVsReproductionRateChart extends Component {
 
 
     updateChart(data, prevData) {
-        
+        let self = this;
+
         // note on axis domains:
         // since we need smooth interpolations between contours, 
         // better to define fixed domains, so when new data appears
@@ -302,24 +337,46 @@ class MobilityVsReproductionRateChart extends Component {
 
         // correlation line
         this.timeLine = this.placeHolderLine.append("path");
-        this.timeLine.datum(data)
+        let myLine = this.timeLine.datum(data)
                 .attr("fill", "none")
                 .attr("stroke", 'rgb(99, 69, 180)') //gradient)
                 .attr('stroke-opacity',0.1)
                 .attr("stroke-width", 2)
                 .attr("d", line)
                 .raise();
+        myLine.clone()
+            .attr('stroke-opacity', 0.5)
+            .attr('stroke', 'whitesmoke')
+            .attr("stroke-width", 6);
+        myLine.raise();
 
-        const n = 3;//data.length;
-        const points = this.svg.selectAll('circle')
+        
+        const circlePlaceholder = this.svg.append('g');
+
+        const n = 2; //data.length;
+        const points = circlePlaceholder.selectAll('circle')
             .data(data.slice(0, Math.ceil(n+1)))
             .join('circle')
+            .attr('class', 'date-points')
             .attr('cx', d => scaleX(d.mobility_change_from_baseline))
             .attr('cy', d => scaleY(d.reproduction_rate))
             .attr('r', 2)
-            //.attr('stroke', 'whitesmoke')
-            //.attr('stroke-width', 3)
-            .attr('fill', 'rgb(99, 69, 180)');
+            .attr('fill', 'rgb(99, 69, 180)')
+            .style('cursor', 'pointer')
+            .on("mouseenter", function(event) {
+                const pointer = d3.pointer(event, this);
+                const value = event.target.__data__;
+
+                self.tooltip
+                    .attr("transform", `translate(${pointer[0]},${pointer[1] + 15})`)
+                    .call(
+                        callout, 
+                        `${formatDate2(new Date(value.date))}`
+                    );
+            })
+            .on("mouseleave", function() {
+                self.tooltip.call(callout, null);
+            });
 
         const pathB = this.svg.append("path").attr("fill", "none").attr("stroke", "none")
         const pathC = this.svg.append("path").attr("fill", "none").attr("stroke", "none")

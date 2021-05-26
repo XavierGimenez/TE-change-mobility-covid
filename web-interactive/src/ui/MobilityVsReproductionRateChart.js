@@ -69,25 +69,35 @@ class MobilityVsReproductionRateChart extends Component {
     evaluateCaptions() {
         let { step, stepProgress, data } = this.props;
 
-        console.log(step);
-        
-        this.showLineAt(0);
+        this.showLineAt(0, 0);
+        this.showLineAt(0, 0, this.timeLineClonedStepBefore);
         this.tooltipDynamic.call(callout, null);
 
-        let datePointIndex = (step === 10)? 0 : 
-            (step === 15)? 2 : 
-            (step === 20)? 5 : 
-            (step === 30)? 13 :
-            (step === 40)? 27 :  
-            (step === 50)? 35 :  
-            (step === 60)? data.length :  data.length;
+        // decide progress of the timeline
+        // date position through the line, keep also
+        // track of the previous point so we can
+        // highlight just the time span being described 
+        let datePointIndex = (step === 10)? [0,0] : 
+            (step === 15)? [2, 0] : 
+            (step === 20)? [5, 2] : 
+            (step === 30)? [13,5] :
+            (step === 40)? [27,13] :  
+            (step === 50)? [35,27] :  
+            (step === 60)? [data.length,35] :  
+            (step === 70)? [-1,-1]:[-1,-1]
+        
+        if(datePointIndex[0] !== -1 ) {
+            this.showLineAt(datePointIndex[0], datePointIndex[1]);
+            this.showTooltipDynamic(datePointIndex[0]);
+            this.showLineAt(datePointIndex[1], datePointIndex[1], this.timeLineClonedStepBefore)
+        }
 
-        this.showLineAt(datePointIndex);
-        this.showTooltipDynamic(datePointIndex);
+        // decide visibility of contours
+        this.placeHolderContours.transition().duration(2000).attr('opacity', step >= 70? 1:0);
     }
 
 
-    showLineAt(n) {
+    showLineAt(n, nPrevious, stepBefore = undefined) {
         const { data } = this.props;
 
         const lineM = d3.line()
@@ -97,30 +107,38 @@ class MobilityVsReproductionRateChart extends Component {
             self = this;
 
         // show date points
-        this.placeHolderDatePoints.selectAll('circle').remove();
-        this.placeHolderDatePoints.selectAll('circle')
-            .data(data.slice(0, Math.ceil(n+1)))
-            .join('circle')
-                .attr('class', 'date-points')
-                .attr('cx', d => this.scaleX(d.mobility_change_from_baseline))
-                .attr('cy', d => this.scaleY(d.reproduction_rate))
-                .attr('r', 2)
-                .attr('fill', 'rgb(99, 69, 180)')
-                .style('cursor', 'pointer')
-                .on("mouseenter", function(event) {
-                    const pointer = d3.pointer(event, this);
-                    const value = event.target.__data__;
-    
-                    self.tooltip
-                        .attr("transform", `translate(${pointer[0]},${pointer[1] + 15})`)
-                        .call(
-                            callout, 
-                            `${formatDate2(new Date(value.date))}`
-                        );
-                })
-                .on("mouseleave", function() {
-                    self.tooltip.call(callout, null);
-                });
+        if(_.isUndefined(stepBefore)) {
+            this.placeHolderDatePoints.selectAll('circle').remove();
+            this.placeHolderDatePoints.selectAll('circle')
+                //.data(data.slice(Math.ceil(nPrevious+1), Math.ceil(n+1)))
+                .data(data.slice(0, Math.ceil(n+1)))
+                .join('circle')
+                    .attr('class', 'date-points')
+                    .attr('opacity', function(d,i) {
+                        return _.inRange(i, nPrevious, n+1)? 1:0.5
+                    })
+                    .attr('cx', d => this.scaleX(d.mobility_change_from_baseline))
+                    .attr('cy', d => this.scaleY(d.reproduction_rate))
+                    .attr('r', 4)
+                    .attr('stroke', '#122c91')
+                    .attr('stroke-width', 3)
+                    .attr('fill', 'whitesmoke')
+                    .style('cursor', 'pointer')
+                    .on("mouseenter", function(event) {
+                        const pointer = d3.pointer(event, this);
+                        const value = event.target.__data__;
+        
+                        self.tooltip
+                            .attr("transform", `translate(${pointer[0]},${pointer[1] + 15})`)
+                            .call(
+                                callout, 
+                                `${formatDate2(new Date(value.date))}`
+                            );
+                    })
+                    .on("mouseleave", function() {
+                        self.tooltip.call(callout, null);
+                    });
+        }        
 
         this.pathB.attr(
             "d",
@@ -140,11 +158,16 @@ class MobilityVsReproductionRateChart extends Component {
         // measure them and interpolate!
         const lB = this.pathB.node().getTotalLength();
         const lC = this.pathC.node().getTotalLength();
-        const l = lB + (lC - lB) * (n - Math.floor(n));
+        const l = (lB + (lC - lB) * (n - Math.floor(n)) ) * 0.99; // 0.99 because there is some extra offset in the totalLength...
 
         // finally, apply a stroke-dasharray of the correct length
-        this.timeLine.attr("stroke-dasharray", [l, this.timeLine.node().getTotalLength() - l]);
-        this.timeLineCloned.attr("stroke-dasharray", [l, this.timeLine.node().getTotalLength() - l]);
+        if(_.isUndefined(stepBefore)) {
+            this.timeLine.attr("stroke-dasharray", [l, this.timeLine.node().getTotalLength() - l]);
+            this.timeLineCloned.attr("stroke-dasharray", [l, this.timeLine.node().getTotalLength() - l]);
+        }
+        else {
+            this.timeLineClonedStepBefore.attr("stroke-dasharray", [l, this.timeLine.node().getTotalLength() - l]);
+        }        
      }
 
 
@@ -162,7 +185,7 @@ class MobilityVsReproductionRateChart extends Component {
             //.style('overflow', 'visible');
         
         // add layers
-        this.placeHolderContours = this.svg.append('g');
+        this.placeHolderContours = this.svg.append('g').attr('opacity', 0);
         this.placeHolderLine = this.svg.append('g');
         this.placeHolderDatePoints =  this.svg.append('g');
         this.tooltip = this.svg.append('g');
@@ -369,10 +392,15 @@ class MobilityVsReproductionRateChart extends Component {
                 .attr("d", line)
                 .raise();
         this.timeLineCloned = myLine.clone()
-            .attr('stroke-opacity', 0.5)
+            .attr('stroke-opacity', 1)
             .attr('stroke', 'whitesmoke')
-            .attr("stroke-width", 6);
+            .attr("stroke-width", 6);            
         myLine.raise();
+
+        this.timeLineClonedStepBefore = this.timeLineCloned.clone()
+            .attr('stroke-opacity', 0.7)
+            .attr('stroke', '#122c91')
+            .raise();
 
         // axis, axis labels (once)
         if(_.isNil(prevData)) {

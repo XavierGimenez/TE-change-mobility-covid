@@ -16,7 +16,7 @@ class MobilityVsReproductionRateScroller extends Component {
         this.state = {
             // scrollama data
             data: 0,
-            steps: [5, 10, 15, 20, 30, 40, 50, 60, 70],
+            steps: [5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 85],
             progress: 0,    
             mobilityCategory: _.first(_.keys(MOBILITY_CATEGORIES))  
         };
@@ -74,7 +74,6 @@ class MobilityVsReproductionRateScroller extends Component {
                                     <p>
                                         On 13 March, the State of Alarm was declared, initially for 15 days, and the lockdown was imposed on 14 March 2020.
                                     </p>
-                                    <p>{Math.round(progress * 1000) / 10 + '%'}</p>
                                 </div>                                
                             </Step>
 
@@ -137,18 +136,31 @@ class MobilityVsReproductionRateScroller extends Component {
                                 </div>
                             </Step>
                             <Step data={70}>
-                            <ButtonGroup vertical>
-                            {
-                                _.toPairs(MOBILITY_CATEGORIES)
-                                    .map( (category, i) => <Button
-                                        active={category[0] === mobilityCategory} 
-                                        variant="outline-secondary" 
-                                        key={i}
-                                        onClick={() => this.setState({mobilityCategory:category[0]})}>
-                                            { category[1] }
-                                        </Button>)
-                            }
-                            </ButtonGroup>
+                                <div className="step">
+                                    <p>
+                                        <strong>How these last 14 months have been?</strong>
+                                    </p>
+                                    <p>
+                                        As a summary, all these timeline can be summarized as a heatmap, 
+                                    </p>
+                                </div>
+                            </Step>
+                            <Step data={80}>
+                                <ButtonGroup vertical>
+                                {
+                                    _.toPairs(MOBILITY_CATEGORIES)
+                                        .map( (category, i) => <Button
+                                            active={category[0] === mobilityCategory} 
+                                            variant="outline-secondary" 
+                                            key={i}
+                                            onClick={() => this.setState({mobilityCategory:category[0]})}>
+                                                { category[1] }
+                                            </Button>)
+                                }
+                                </ButtonGroup>
+                            </Step>
+                            <Step data={85}>
+                                <div className="step"/>
                             </Step>
                     </Scrollama>
                 </div>                

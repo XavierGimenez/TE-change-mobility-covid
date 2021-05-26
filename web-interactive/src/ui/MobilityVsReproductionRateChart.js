@@ -208,7 +208,7 @@ class MobilityVsReproductionRateChart extends Component {
         // transitions to the new one
         this.scaleX = d3.scaleLinear()
                         .domain(
-                            [-100, 50]
+                            [-90, 70]
                             /*d3.extent(data, d => d.mobility_change_from_baseline)
                                 .map( (d,i) => {
                                     return i === 0? d:(d<10? 10:d)
@@ -266,7 +266,7 @@ class MobilityVsReproductionRateChart extends Component {
             .attr('font-weight', 'bold')
             .attr('class', 'axis-label-main')
             .style('text-anchor', 'middle')
-            .text('Weekly change in mobility');
+            .text('Weekly change in mobility (%)');
 
         xAxisLabels.append('text')
         .text('More mobility →')

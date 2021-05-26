@@ -2,13 +2,11 @@ import React, { Component } from 'react';
 import * as _ from 'lodash';
 import * as d3 from 'd3';
 import {
-    callout,
-    textWrap
+    callout
 } from '../util/d3Utils';
 import {
     formatDate2
 } from '../util/timeUtils';
-import { join } from 'lodash';
 
 
 class MobilityVsReproductionRateChart extends Component {
@@ -71,44 +69,21 @@ class MobilityVsReproductionRateChart extends Component {
     evaluateCaptions() {
         let { step, stepProgress, data } = this.props;
 
-        console.log(step, stepProgress);
+        console.log(step);
         
         this.showLineAt(0);
         this.tooltipDynamic.call(callout, null);
 
-        // first date point?        
-        if( step === 10 && _.inRange(stepProgress, 0, 0.22) )
-            this.showTooltipDynamic(0);
-        
-        // 
-        if( step === 10 && _.inRange(stepProgress, 0.22, 0.43) ) {
-           this.showLineAt(2)
-           this.showTooltipDynamic(2);
-        }
+        let datePointIndex = (step === 10)? 0 : 
+            (step === 15)? 2 : 
+            (step === 20)? 5 : 
+            (step === 30)? 13 :
+            (step === 40)? 27 :  
+            (step === 50)? 35 :  
+            (step === 60)? data.length :  data.length;
 
-        //
-        if( step === 10 && _.inRange(stepProgress, 0.43, 0.65) ) {
-            this.showLineAt(5)
-            this.showTooltipDynamic(5);
-        }
-
-        //
-        if( step === 10 && _.inRange(stepProgress, 0.65, 0.8) ) {
-            this.showLineAt(13)
-            this.showTooltipDynamic(13);
-        }
-
-        //
-        if( step === 10 && _.inRange(stepProgress, 0.8, 0.9) ) {
-            this.showLineAt(19)
-            this.showTooltipDynamic(19);
-        }
-
-        //
-        if( step === 10 && _.inRange(stepProgress, 0.91, 0.99) ) {
-            this.showLineAt(data.length)
-            this.showTooltipDynamic(data.length);
-        }
+        this.showLineAt(datePointIndex);
+        this.showTooltipDynamic(datePointIndex);
     }
 
 
@@ -184,7 +159,7 @@ class MobilityVsReproductionRateChart extends Component {
         this.svg = d3.select(this.node)
             .attr('width', this.width)
             .attr('height', this.height)
-            .style('overflow', 'visible');
+            //.style('overflow', 'visible');
         
         // add layers
         this.placeHolderContours = this.svg.append('g');
@@ -292,11 +267,13 @@ class MobilityVsReproductionRateChart extends Component {
                         .x(d => this.scaleX(d.mobility_change_from_baseline))
                         .y(d => this.scaleY(d.reproduction_rate))
                         .size([this.width, this.height])
-                        .bandwidth(35)
+                        .bandwidth(31)
                         //.thresholds(30),
                         // need to understand why these values are not greater ones
                         .thresholds(_.range(1, 30, 1).map(d => d/1000)),
-            colors = ["whitesmoke","#4eeca3"],
+            //colors = ["whitesmoke","#4eeca3"],
+            colors = ['#122c91', '#2a6fdb', '#48d6d2', '#81e9e6', '#fefcbf'],
+            //colors = ['#492b7c', '#301551', '#ed8a0a', '#f6d912', '#fff29c'],
             scaleColorLinear = d3.scaleLinear()
                 .domain(d3.range(0,1,1/colors.length))
                 .range(colors)
@@ -327,10 +304,10 @@ class MobilityVsReproductionRateChart extends Component {
             .attr("x2", this.scaleX(0));
         
         graph.selectAll('.treshold-line')
-            .style("stroke-dasharray",[2, 2])
+            .style("stroke-dasharray",[2, 4])
             .style("stroke-width", 1)
-            .style("stroke", '#c0c0c0')//'#e8e8d7')
-            .style('stroke-opacity', 1);
+            .style("stroke", '#2a6fdb')//'#e8e8d7')
+            .style('stroke-opacity', 0.6);
 
         const t = this.svg.transition().duration(750);
         
@@ -373,7 +350,8 @@ class MobilityVsReproductionRateChart extends Component {
                             .attr("stroke-width", 1)
                             .attr('stroke', 'whitesmoke')
                             //.style('mix-blend-mode','difference')
-                            .attr("stroke-opacity", 0.65) //(d, i) => 1 - (i / 10) )
+                            //.attr("stroke-opacity", (d, i) => 1 - (i / 10) )
+                            .attr("stroke-opacity", (d, i) => (i / 10) )
                             .attr('fill-opacity', 0.75)
                             .attr("fill", d => scaleColor(d.value))
 
@@ -422,7 +400,7 @@ class MobilityVsReproductionRateChart extends Component {
 
 
     render() {
-        return <div style={{maxWidth:"99%"}} ref={this.elementRef}>
+        return <div style={{maxWidth:"99%", borderRight:"1px solid rgba(42, 111, 219, 0.25)"}} ref={this.elementRef}>
             <svg ref={node => this.node = node}></svg>
         </div>
     }

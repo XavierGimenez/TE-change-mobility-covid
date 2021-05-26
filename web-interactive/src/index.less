@@ -1,16 +1,15 @@
 @color-bg: whitesmoke;
-@color-font: #333;
+@color-font: #c0c0c0;
+@color-font-section: #7fa4a4;
 @font-family-condensed: 'Roboto Condensed', 'Arial';
 @font-family: 'Roboto', 'Arial';
 @text-shadow-width: 1px;
-
 
 body {
     background-color: @color-bg;
     color: @color-font;
     font-size: 1.2rem;
     font-weight: 300;
-    color: #555;
 }
 
 p {
@@ -36,6 +35,11 @@ section {
 
 
 // svg
+
+svg {
+    overflow: visible;
+}
+
 .tick text {
     font-family: @font-family-condensed;
     color: #aaa;
@@ -47,11 +51,11 @@ text {
     font-size: 12px;
 }
 g.axis-labels {
-    fill: #aaa;
+    fill: @color-font-section;
 }
 
 .axis-label-main {
-    fill: #888;
+    fill: @color-font-section;
     text-transform: uppercase;
 }
 
@@ -59,9 +63,11 @@ g.axis-labels {
 // scrollama
 .scrollama {
     .graphics-container {
+        color: #7fa4a4;
         padding: 40vh 2vw 20vh;
         display: flex;
         justify-content: space-between;
+        background-color: #122c91;
     }
     .scroller {
         flex-basis: 35%;
@@ -70,7 +76,7 @@ g.axis-labels {
     .step {
         margin: 0 auto 3rem auto;
         padding: 180px 0;
-        //border: 1px solid #333;
+        border: 1px solid whitesmoke;
         & p {
           text-align: left;
           padding: 1rem;
@@ -80,8 +86,8 @@ g.axis-labels {
           margin-bottom: 0;
         }
 
-        &.step-1{
-            height: 180vh;
+        &.step-large{
+            height: 60vh;
         }
     }
 

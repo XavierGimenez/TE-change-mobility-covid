@@ -33,7 +33,8 @@ export const callout = (g, value) => {
        g
             .style("display", null)
             .style("pointer-events", "none")
-            .style("font", "10px sans-serif");
+            .style("font", "10px sans-serif")
+            .raise();
 
         const path = g.selectAll("path")
             .data([null])
@@ -49,7 +50,7 @@ export const callout = (g, value) => {
                 .data((value + "").split(/\n/))
                 .join("tspan")
                     .attr("x", 0)
-                    .attr("y", (d, i) => `${i * 1.1}em`)
+                    .attr("y", (d, i) => `${i * 1.5}em`)
                     .style("font-weight", (_, i) => i ? null : "bold")
                     .text(d => d)
             );

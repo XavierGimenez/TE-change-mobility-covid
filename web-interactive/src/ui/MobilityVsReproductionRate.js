@@ -26,7 +26,6 @@ class MobilityVsReproductionRate extends Component {
         } = this.props;
 
         return <Container fluid>
-            <section>
                 <h1>Mobility Vs Reproduction</h1>
                 <Row>
                     <Col>
@@ -43,7 +42,6 @@ class MobilityVsReproductionRate extends Component {
                         />
                     </Col>
                 </Row>
-            </section>            
         </Container>
     }
 }

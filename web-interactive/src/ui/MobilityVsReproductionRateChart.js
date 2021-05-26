@@ -48,9 +48,21 @@ class MobilityVsReproductionRateChart extends Component {
         let x = this.scaleX(datum.mobility_change_from_baseline),
             y = Math.round(this.scaleY(datum.reproduction_rate)) + 10;
 
+        let text;
+        switch(n) {
+            case 0:
+                text = formatDate2(new Date(datum.date)) + 
+                    "\nReproduction rate of " + datum.reproduction_rate + 
+                    "\nNo Lockdown applied yet. ";
+                break;
+            default:
+                text=formatDate2(new Date(datum.date));
+                break;
+        }
+
         this.tooltipDynamic
             .attr("transform", `translate(${x},${y})`)
-            .call(callout, `${formatDate2(new Date(datum.date))}`);
+            .call(callout, `${text}`);
     }
 
 
@@ -147,6 +159,7 @@ class MobilityVsReproductionRateChart extends Component {
                 [data[0]].concat(data).concat([data[data.length - 1]]).slice(0, 2 + Math.ceil(n + 1))
             )
         );
+        // https://observablehq.com/@fil/animated-cardinal-curve
         // We're using two paths drawn with a *curveCardinalOpen* on the same data with fake ends.
         // These paths are almost exactly superimposed with our *curveCardinal* path, so we can
         // measure them and interpolate!
@@ -155,7 +168,8 @@ class MobilityVsReproductionRateChart extends Component {
         const l = lB + (lC - lB) * (n - Math.floor(n));
 
         // finally, apply a stroke-dasharray of the correct length
-        this.timeLine.attr("stroke-dasharray", [l, this.timeLine.node().getTotalLength() - l]);        
+        this.timeLine.attr("stroke-dasharray", [l, this.timeLine.node().getTotalLength() - l]);
+        this.timeLineCloned.attr("stroke-dasharray", [l, this.timeLine.node().getTotalLength() - l]);
      }
 
 
@@ -205,7 +219,7 @@ class MobilityVsReproductionRateChart extends Component {
                         .range([0 + this.margin.left, this.width - this.margin.right]);
         
         this.scaleY = d3.scaleLinear()
-                        .domain([0, 3.5])
+                        .domain([0.25, 3.5])
                         //([0, d3.max(data, d => d.reproduction_rate)])
                         .range([this.height - this.margin.bottom, this.margin.top]);
     }
@@ -213,133 +227,62 @@ class MobilityVsReproductionRateChart extends Component {
 
     axisLabels(graph) {
         const { scaleX, scaleY } = this;
-
-        const markerBoxWidth = 8,
-            markerBoxHeight = 8,
-            refX = markerBoxWidth / 2,
-            refY = markerBoxHeight / 2,
-            markerWidth = markerBoxWidth / 2,
-            markerHeight = markerBoxHeight / 2,
-            arrowPoints = [[0, 0], [0, 8], [8, 4]];
-
-        // Add the arrowhead marker definition to the svg element
-        this.svg
-            .append('defs')
-            .append('marker')
-            .attr('id', 'arrow')
-            .attr('viewBox', [0, 0, markerBoxWidth, markerBoxHeight])
-            .attr('refX', refX)
-            .attr('refY', refY)
-            .attr('markerWidth', markerBoxWidth)
-            .attr('markerHeight', markerBoxHeight)
-            .attr('orient', 'auto-start-reverse')
-            .append('path')
-            .attr('d', d3.line()(arrowPoints))
-            .attr('stroke', 'black');
-        
-        let offset = 50;
         
         // vertical axis
         let yAxisLabels = graph.append('g')
+            .attr('class', 'axis-labels')
             .attr('transform', 'translate(' + this.margin.left/2 + ',' + scaleY(1) + ') rotate(-90) ');
         
         yAxisLabels.append('text')
             .attr('dy',0)
-            .attr('y', -this.margin.left/2)
-            .attr('font-family', 'Arial')
-            .attr('font-size', 11)
+            .attr('y', -this.margin.left/4)
             .attr('font-weight', 'bold')
-            .attr('class', 'axis-label-main-2')
+            .attr('class', 'axis-label-main')
             .style('text-anchor', 'middle')
-            .text('Reproduction rate')
-        setTimeout(() => {
+            .text('Reproduction rate');
 
-        this.svg.selectAll('.axis-label-main-2')
-            .call(textWrap, 50)
-        }, 0);
         yAxisLabels.append('text')
-            .text('Increasing')
+            .text('Increasing →')
             .style('text-anchor', 'start')
             .attr('alignment-baseline', 'middle')
             .attr('x', 10)
             .attr('y', 0)
             .attr('font-size', 11)
-            .attr('font-family', 'Arial');
 
         yAxisLabels.append('text')
-            .text('Decreasing')
+            .text('← Decreasing')
             .style('text-anchor', 'end')
             .attr('alignment-baseline', 'middle')
             .attr('x', -10)
             .attr('y', 0)
             .attr('font-size', 11)
-            .attr('font-family', 'Arial');
-        
-        yAxisLabels.append('path')
-            .attr('d', d3.line()([
-            [0 + offset*1.5, 0],
-            [0 + offset*1.5 + 20, 0]]
-            ))
-            .attr('stroke', 'black').attr('marker-end', 'url(#arrow)').attr('fill', 'none');
-        
-        yAxisLabels.append('path')
-            .attr('d', d3.line()([
-            [0 - offset*1.5, 0],
-            [0 - offset*1.5 - 20, 0]]
-            ))
-            .attr('stroke', 'black').attr('marker-end', 'url(#arrow)').attr('fill', 'none');
 
         // horizontal axis
         let xAxisLabels = graph.append('g')
-            .attr('transform', 'translate(' + scaleX(0) + ',' + (this.height - this.margin.top/2) + ')');
+            .attr('class', 'axis-labels')
+            .attr('transform', 'translate(' + scaleX(0) + ',' + (this.height - this.margin.bottom) + ')');
 
         xAxisLabels.append('text')
             .attr('dy',0)
-            .attr('y', this.margin.bottom/4)
-            .attr('font-family', 'Arial')
-            .attr('font-size', 11)
+            .attr('y', this.margin.bottom/2.5)
             .attr('font-weight', 'bold')
             .attr('class', 'axis-label-main')
             .style('text-anchor', 'middle')
             .text('Weekly change in mobility');
 
-        setTimeout(() => {
-            this.svg.selectAll('.axis-label-main')
-                .call(textWrap, 100);
-        }, 0); 
-
-        graph.append('text')
-        .text('More mobility')
+        xAxisLabels.append('text')
+        .text('More mobility →')
         .style('text-anchor', 'start')
         .attr('alignment-baseline', 'middle')
-        .attr('x', scaleX(0) + 10)
-        .attr('y', this.height - this.margin.top/2)
-        .attr('font-size', 11)
-        .attr('font-family', 'Arial')
+        .attr('x', 15)
+        .attr('y', this.margin.bottom/4)
 
-        graph.append('text')
-            .text('Less mobility')
+        xAxisLabels.append('text')
+            .text('← Less mobility')
             .style('text-anchor', 'end')
             .attr('alignment-baseline', 'middle')
-            .attr('x', scaleX(0) - 10)
-            .attr('y', this.height - this.margin.top/2)
-            .attr('font-size', 11)
-            .attr('font-family', 'Arial');
-
-
-        graph.append('path')
-            .attr('d', d3.line()([
-            [scaleX(0) + 100, this.height - this.margin.top/2],
-            [scaleX(0) + 100 + 20, this.height - this.margin.top/2]]
-            ))
-            .attr('stroke', 'black').attr('marker-end', 'url(#arrow)').attr('fill', 'none');
-
-        graph.append('path')
-            .attr('d', d3.line()([
-            [scaleX(0) - 100, this.height - this.margin.top/2],
-            [scaleX(0) - 100 - 20, this.height - this.margin.top/2]]
-            ))
-            .attr('stroke', 'black').attr('marker-end', 'url(#arrow)').attr('fill', 'none');
+            .attr('x', -15)
+            .attr('y', this.margin.bottom/4)
     }
 
 
@@ -349,7 +292,7 @@ class MobilityVsReproductionRateChart extends Component {
                         .x(d => this.scaleX(d.mobility_change_from_baseline))
                         .y(d => this.scaleY(d.reproduction_rate))
                         .size([this.width, this.height])
-                        .bandwidth(30)
+                        .bandwidth(35)
                         //.thresholds(30),
                         // need to understand why these values are not greater ones
                         .thresholds(_.range(1, 30, 1).map(d => d/1000)),
@@ -430,7 +373,7 @@ class MobilityVsReproductionRateChart extends Component {
                             .attr("stroke-width", 1)
                             .attr('stroke', 'whitesmoke')
                             //.style('mix-blend-mode','difference')
-                            .attr("stroke-opacity", (d, i) => 1 - (i / 10) )
+                            .attr("stroke-opacity", 0.65) //(d, i) => 1 - (i / 10) )
                             .attr('fill-opacity', 0.75)
                             .attr("fill", d => scaleColor(d.value))
 
@@ -447,7 +390,7 @@ class MobilityVsReproductionRateChart extends Component {
                 .attr("stroke-width", 2)
                 .attr("d", line)
                 .raise();
-        myLine.clone()
+        this.timeLineCloned = myLine.clone()
             .attr('stroke-opacity', 0.5)
             .attr('stroke', 'whitesmoke')
             .attr("stroke-width", 6);

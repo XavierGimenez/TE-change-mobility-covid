@@ -7,7 +7,15 @@
 
 body {
     background-color: @color-bg;
-    color: @color-font; 
+    color: @color-font;
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: #555;
+}
+
+p {
+    font-family: @font-family;
+    line-height: 1.7;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -30,12 +38,21 @@ section {
 // svg
 .tick text {
     font-family: @font-family-condensed;
+    color: #aaa;
 }
 
 tspan,
 text {
     font-family: @font-family;
     font-size: 12px;
+}
+g.axis-labels {
+    fill: #aaa;
+}
+
+.axis-label-main {
+    fill: #888;
+    text-transform: uppercase;
 }
 
 
@@ -53,11 +70,10 @@ text {
     .step {
         margin: 0 auto 3rem auto;
         padding: 180px 0;
-        border: 1px solid #333;
+        //border: 1px solid #333;
         & p {
-          text-align: center;
+          text-align: left;
           padding: 1rem;
-          font-size: 1.8rem;
           margin: 0;
         }
         &:last-child {

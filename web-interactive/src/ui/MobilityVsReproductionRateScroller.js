@@ -69,7 +69,10 @@ class MobilityVsReproductionRateScroller extends Component {
                             <Step data={10}>
                                 <div className="step step-large">
                                     <p>
-                                        <strong>At the beginning of march, with the reproduction rate at highest values, the infection was being able to spread rapidly through the population</strong>.<br/>The spread of the coronavirus had started likely weeks before: The virus was first confirmed to have spread to Spain on 31 January 2020, and by the end of February the community transmission was started in the whole country.
+                                        <strong>At the beginning of march, with the reproduction rate at highest values, the infection was being able to spread rapidly through the population</strong>.
+                                    </p>
+                                    <p>
+                                        The spread of the coronavirus had started likely weeks before: The virus was first confirmed to have spread to Spain on 31 January 2020, and by the end of February the community transmission was started in the whole country.
                                     </p>
                                     <p>
                                         On 13 March, the State of Alarm was declared, initially for 15 days, and the lockdown was imposed on 14 March 2020.

@@ -1,6 +1,9 @@
 @color-bg: whitesmoke;
-@color-font: #c0c0c0;
+@color-font: #3e4491;
 @color-font-section: #7fa4a4;
+@color-main: #122c91;
+
+@font-family-H1: 'Lora', 'Roboto';
 @font-family-condensed: 'Roboto Condensed', 'Arial';
 @font-family: 'Roboto', 'Arial';
 @text-shadow-width: 1px;
@@ -21,15 +24,20 @@ button {
     font-family: @font-family !important;
     font-weight: 300 !important;
 }
-h1, h2, h3, h4, h5, h6 {
-    font-family: @font-family-condensed;
+h1 {
+    font-family: @font-family-H1;
+    letter-spacing: 0.015em;
+    font-weight: 600;
+    font-size: 3rem;
+}
+h2, h3, h4, h5, h6 {
+    font-family: @font-family;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-weight: 700;
+    letter-spacing: 0.05em;    
 }
 
 section {
-    margin: 0 5rem;
+    margin: 10vh 5rem;
 }
 
 
@@ -38,6 +46,8 @@ section {
 }
 
 
+
+////////////////////////////////////////////////////////////////
 // svg
 
 svg {
@@ -63,15 +73,21 @@ g.axis-labels {
     text-transform: uppercase;
 }
 
+.last-week-label {
+    font-size: 12px;
+}
 
+
+////////////////////////////////////////////////////////////////
 // scrollama
+
 .scrollama {
     .graphics-container {
         color: #7fa4a4;
         padding: 40vh 2vw 20vh;
         display: flex;
         justify-content: space-between;
-        background-color: #122c91;
+        background-color: @color-main;
     }
     .scroller {
         flex-basis: 35%;

@@ -13,9 +13,13 @@ class MobilityChangesWeeks extends Component {
     render() {
         let { data } = this.props;
         return <Container fluid>
-            <section>
+            <section className="text-center">
                 <h1>Mobility Changes</h1>
-               
+                <Row className="justify-content-center">
+                    <Col xs={5}>
+                    aslka ls kalsk lfldjs flshjfs gfdk aslka ls kalsk lfldjs flshjfs gfdkaslka ls kalsk lfldjs flshjfs gfdkaslka ls kalsk lfldjs flshjfs gfdkaslka ls kalsk lfldjs flshjfs gfdkaslka ls kalsk lfldjs flshjfs gfdkaslka ls kalsk lfldjs flshjfs gfdkaslka ls kalsk lfldjs flshjfs gfdkaslka ls kalsk lfldjs flshjfs gfdk
+                    </Col>
+                </Row>
                 {
                     _.chunk(_.toPairs(MOBILITY_CATEGORIES), 3).map( (chunk,i) => <Row key={i}>
                         {

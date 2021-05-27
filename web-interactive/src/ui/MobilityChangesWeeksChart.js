@@ -179,7 +179,7 @@ class MobilityChangesWeeksChart extends Component {
                 .raise();
             
             selection
-                .attr('stroke', 'rgb(99, 69, 180)')
+                .attr('stroke', '#122c91')
                 .attr('stroke-width', 3)
                 .attr('stroke-opacity', 1)
                 .raise();
@@ -187,7 +187,7 @@ class MobilityChangesWeeksChart extends Component {
 
         let unhighlightWeek = selection => {
             selection
-                .attr('stroke', d => (new Date(_.first(d).date)).getFullYear() === 2021? '#01e299':'#666666') //'#f86a6f')
+                .attr('stroke', d => (new Date(_.first(d).date)).getFullYear() === 2021? '#f8aa4b':'#95adbe')
                 .attr('stroke-width', d => scaleStrokeWidth(_.first(d).week) )
                 .attr('stroke-opacity', 0.3);
             graph.selectAll(".weekly-line-border").remove();
@@ -206,8 +206,7 @@ class MobilityChangesWeeksChart extends Component {
                 .attr('y', scaleY(datum.mobility_change_from_baseline))
                 .attr('dy', -5)
                 .attr('text-anchor', "end")
-                .attr('fill', 'rgb(99, 69, 180)')
-                .attr('font-size', 10)
+                .attr('fill', '#122c91')
                 .attr('class', 'last-week-label text-shadow')
                 .text(formatDate(new Date(datum.date)))
         };
@@ -222,12 +221,6 @@ class MobilityChangesWeeksChart extends Component {
                 return _.drop(d.sort()).concat(_.first(d));
             });
 
-            //console.log(_.last(sortedData).length < 7)
-//        if(_.last(sortedData).length < 7)
-//            sortedData = _.slice(sortedData, 0, sortedData.length-1);
-        
-        //console.log(sortedData);
-
         // draw all weekly lines
         graph.append('g')
             .attr("fill", "none")
@@ -241,9 +234,10 @@ class MobilityChangesWeeksChart extends Component {
                 .attr("d", d => line(d))
                 .style('cursor', 'pointer')
                 .attr('fill', 'none')
-                .attr('stroke', d => (new Date(_.first(d).date)).getFullYear() === 2021? '#01e299':'#666666') //'#f86a6f')
+                .style('mix-blend-mode', 'multiply')
+                .attr('stroke', d => (new Date(_.first(d).date)).getFullYear() === 2021? '#f8aa4b':'#95adbe')
                 .attr('stroke-width', d => scaleStrokeWidth(_.first(d).week) )
-                .attr('stroke-opacity', 0.3 ) // d => scaleStrokeOpacity(_.first(d).week) )
+                .attr('stroke-opacity', d => (new Date(_.first(d).date)).getFullYear() === 2021? 0.75:0.3 ) // d => scaleStrokeOpacity(_.first(d).week) )
 
         // highlight last week by default
         highlightWeek(
@@ -359,8 +353,7 @@ class MobilityChangesWeeksChart extends Component {
             .attr("stroke-dasharray", [2,2])
         graph.append('text')
             .attr('class', 'text-shadow')
-            .attr('font-size', 10)
-            .attr('font-weight', 500)
+            //.attr('font-weight', 500)
             .attr('x', -this.margin.left*6)
             .attr('y', scaleY(0))
             .attr("alignment-baseline", "middle")

@@ -330,7 +330,7 @@ class MobilityVsReproductionRateChart extends Component {
             .style("stroke-dasharray",[2, 4])
             .style("stroke-width", 1)
             .style("stroke", '#2a6fdb')//'#e8e8d7')
-            .style('stroke-opacity', 0.6);
+            .style('stroke-opacity', 0.5);
 
         const t = this.svg.transition().duration(750);
         

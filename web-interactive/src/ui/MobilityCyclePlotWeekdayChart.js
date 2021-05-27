@@ -66,14 +66,14 @@ class MobilityCyclePlotWeekdayChart extends Component {
                         new Date(_.last(data).date)
                     ])                    
                     .range([0 + this.margin.left, this.width - this.margin.right]),
-
             yDomain = d3.extent(data, d => d.mobility_change_from_baseline),
-
+            maxyDomain = d3.max(yDomain, d => Math.abs(d)),
             scaleY = d3.scaleLinear()
                         .domain(yDomain)
                         .range([this.height - this.margin.bottom, this.margin.top]),
             scaleColor = d3.scaleSequential(
-                    [-100, 100], 
+                    //[-100, 100], // first approach, considering that the % of change can be comparable through all the categories
+                    [-maxyDomain, maxyDomain], //best approach, each category refering itself in terms of percentual change
                     d3.piecewise(
                         d3.interpolateRgb, 
                         ["#122c91", "#03283c", "#18928a", "#31dfb4", "#97d3a8", "#daa64b", "#f46c1d", "#f83915", "#f71211"]
@@ -82,17 +82,11 @@ class MobilityCyclePlotWeekdayChart extends Component {
                                 ["#122c91", "#03283c", "#18928a", "#31dfb4", "#97d3a8", "#daa64b", "#f46c1d", "#f83915", "#f71211"]
                             )
                     )
-                ).clamp(true),
-            //scaleColor = d3.scaleSqrt([-100, 0, 100], ["red", "white", "red"]),
+                ).clamp(true),            
             line = d3.line()
                     .x( d => scaleX(new Date(d.date)) )
                     .y( d => scaleY(d.mobility_change_from_baseline) )
-                    //.curve(d3.curveMonotoneX),
-                    .curve(d3.curveBasis),
-
-            scale2Gradient = d3.scaleLinear()
-                                .domain([0,1])
-                                .range(scaleY.domain());
+                    .curve(d3.curveBasis);
 
         // axis
         let xAxis = g => g
@@ -133,14 +127,14 @@ class MobilityCyclePlotWeekdayChart extends Component {
             .attr("offset", d => d)
             .attr("stop-color", (d,i) => {
                 
-                let stepMobility = (yDomain[1] -  yDomain[0]) / 10;
-
-                if(this.props.category === 'retail_and_recreation_percent_change_from_baseline') {
-                    console.log(yDomain, stepMobility, yDomain[0] + (stepMobility*i));
-                }                    
-                
+                // first approach (useless since the categories are not comparable)
+                // if our scale color is always -100,100, but
+                // every category has its own variation range
+                // so we have to distribute 10 colors from
+                // our colorScale along the height of the gradient (which
+                // is the height of the whole line)                
+                let stepMobility = (yDomain[1] -  yDomain[0]) / 10;                
                 return  scaleColor(yDomain[0] + (stepMobility*i));
-                //return scaleColor(scale2Gradient(d));
             });
 
         // graph        

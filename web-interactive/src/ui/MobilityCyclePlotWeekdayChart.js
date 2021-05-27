@@ -3,15 +3,12 @@ import { MOBILITY_CATEGORIES } from '../common/constants';
 import * as _ from 'lodash';
 import * as d3 from 'd3';
 import {
-    getNumOfWeeks,
-    week,
     formatDate
 } from '../util/timeUtils';
 
 import {
     callout
 } from '../util/d3Utils';
-import { first, snakeCase } from 'lodash';
 
 
 
@@ -146,6 +143,8 @@ class MobilityCyclePlotWeekdayChart extends Component {
         // graph        
         let graph = this.svg.append('g');
 
+        const tooltip = this.svg.append("g");
+
         // draw baseline
         graph.append('line')
             .attr('x1', this.margin.left - 10)
@@ -173,6 +172,21 @@ class MobilityCyclePlotWeekdayChart extends Component {
                     .attr('fill', 'none')
                     .attr('opacity', 0.8)
                     .attr('stroke-width', 3 )
+                    .on("mouseenter", function(event) {
+                        const pointer = d3.pointer(event, this);
+                        const value = event.target.__data__;
+                        
+                        // pending to apply bisect to get the data
+                        tooltip
+                            .attr("transform", `translate(${pointer[0]},${pointer[1] + 10})`)
+                            .call(
+                                callout, 
+                                `${formatDate(new Date(value.date))}`
+                            );
+                    })
+                    .on("mouseleave", function() {
+                        tooltip.call(callout, null);
+                    });
         });
     }
 

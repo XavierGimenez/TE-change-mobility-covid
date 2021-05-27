@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import MobilityCyclePlotWeekdayChart from './MobilityCyclePlotWeekdayChart';
 import { 
     DAY_NAMES,
+    DAY_NAMES_LABEL,
     MOBILITY_CATEGORIES 
 } from '../common/constants'; 
 
@@ -14,7 +15,7 @@ class MobilityCiclePlotWeekday extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            day: _.first(DAY_NAMES)
+            day: DAY_NAMES[1]
         };
     }
 
@@ -42,11 +43,12 @@ class MobilityCiclePlotWeekday extends Component {
                         <div>Select a day of the week:</div>
                         <ButtonGroup size="sm">
                         { 
-                            DAY_NAMES.map(day => <Button 
-                                key={day + "1"}
+                            _.slice(DAY_NAMES_LABEL,1).concat(_.first(DAY_NAMES_LABEL))
+                            .map(day => <Button 
+                                key={day}
                                 variant="outline-info"
-                                active={day === this.state.day}
-                                onClick={() => this.setState({day})}>
+                                active={DAY_NAMES[_.indexOf(DAY_NAMES_LABEL,day)] === this.state.day}
+                                onClick={() => this.setState({day:DAY_NAMES[_.indexOf(DAY_NAMES_LABEL,day)]})}>
                                     {day}
                                 </Button>)
                         }

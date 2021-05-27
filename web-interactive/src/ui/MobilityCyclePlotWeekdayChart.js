@@ -11,7 +11,7 @@ import {
 import {
     callout
 } from '../util/d3Utils';
-import { snakeCase } from 'lodash';
+import { first, snakeCase } from 'lodash';
 
 
 
@@ -59,12 +59,13 @@ class MobilityCyclePlotWeekdayChart extends Component {
 
 
     updateChart(data) {
+        let firstDate = new Date(_.first(data).date),
+            lastDate = new Date(_.last(data).date);
+        
+        firstDate.setMonth(firstDate.getMonth() - 1 ); // not scalable for all scenarios...
 
         let scaleX = d3.scaleTime()
-                    .domain([
-                        new Date(_.first(data).date),
-                        new Date(_.last(data).date)
-                    ])                    
+                    .domain([firstDate, lastDate])
                     .range([0 + this.margin.left, this.width - this.margin.right]),
             yDomain = d3.extent(data, d => d.mobility_change_from_baseline),
             maxyDomain = d3.max(yDomain, d => Math.abs(d)),
@@ -88,6 +89,8 @@ class MobilityCyclePlotWeekdayChart extends Component {
                     .y( d => scaleY(d.mobility_change_from_baseline) )
                     .curve(d3.curveBasis);
 
+        this.svg.selectAll("*").remove();
+        
         // axis
         let xAxis = g => g
             .attr("transform", `translate(0,${this.height - this.margin.bottom})`)
@@ -106,6 +109,7 @@ class MobilityCyclePlotWeekdayChart extends Component {
             )
             .call(g => g.select(".domain").remove())
             .call(g => g.selectAll(".tick line").remove())
+            .call(g => g.selectAll(".tick text").attr('text-anchor', 'end'));
         
         this.svg.append("g").call(xAxis);
         this.svg.append("g").call(yAxis);
@@ -165,8 +169,8 @@ class MobilityCyclePlotWeekdayChart extends Component {
                     .attr("d", line)
                     .style('cursor', 'pointer')
                     .attr('fill', 'none')
-                    .style('mix-blend-mode', 'multiply')
-                    .attr('stroke-width', 4 )
+                    .attr('opacity', 0.8)
+                    .attr('stroke-width', 3 )
         });
     }
 

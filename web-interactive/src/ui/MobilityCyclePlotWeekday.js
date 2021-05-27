@@ -27,7 +27,7 @@ class MobilityCiclePlotWeekday extends Component {
         return <Container fluid>
             <section>
                 <Row>
-                    <Col>
+                    <Col xs={7}>
                         <h1>How was your day?</h1>
                         <p>
                             aslka ls kalsk lfldjs flshjfs gfdk aslka ls kalsk lfldjs flshjfs gfdkaslka ls kalsk lfldjs flshjfs gfdkaslka ls kalsk lfldjs flshjfs gfdkaslka ls kalsk lfldjs flshjfs gfdkaslka ls kalsk lfldjs flshjfs gfdkaslka ls kalsk lfldjs flshjfs gfdkaslka ls kalsk lfldjs flshjfs gfdkaslka ls kalsk lfldjs flshjfs gfdk
@@ -35,7 +35,7 @@ class MobilityCiclePlotWeekday extends Component {
                         <ButtonGroup size="sm">
                         { 
                             DAY_NAMES.map(day => <Button 
-                                key={day+"1"}
+                                key={day + "1"}
                                 variant="outline-info"
                                 active={day === this.state.day}
                                 onClick={() => this.setState({day})}>
@@ -46,12 +46,20 @@ class MobilityCiclePlotWeekday extends Component {
                     </Col>
                     <Col>
                         {   !_.isNil(groupedData) &&
-                                _.toPairs(
-                                    _.groupBy(
-                                        _.get(groupedData, _.indexOf(DAY_NAMES, this.state.day)),
-                                        d => d.metric
-                                    )
-                                ).map( (tuple, i) => {
+                                _.sortBy(
+                                    _.toPairs(
+                                        _.groupBy(
+                                            _.get(groupedData, _.indexOf(DAY_NAMES, this.state.day)),
+                                            d => d.metric
+                                        )
+                                    ),
+                                    arr => {
+                                        // so we show workplaces first, and user notices is different from rest                                
+                                        return arr[0] === 'residential_percent_change_from_baseline'? 'xxx': arr[0];
+                                    }
+                                )
+                                .reverse()
+                                .map( (tuple, i) => {
                                     return <MobilityCyclePlotWeekdayChart
                                         key={i}
                                         category={tuple[0]}

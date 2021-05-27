@@ -48,7 +48,7 @@ class MobilityCyclePlotWeekdayChart extends Component {
         
         this.width = size.width;
         this.height = this.width * 0.3;
-        this.margin = {top: 10, right:50, bottom: 80, left: 5};
+        this.margin = {top: 10, right:50, bottom: 60, left: 20};
                 
         this.svg = d3.select(this.node)
             .attr('width', this.width)
@@ -76,7 +76,7 @@ class MobilityCyclePlotWeekdayChart extends Component {
                     //[-100, 100], // first approach, considering that the % of change can be comparable through all the categories
                     [-maxyDomain, maxyDomain], //best approach, each category refering itself in terms of percentual change
                     d3.piecewise(
-                        d3.interpolateRgb, 
+                        d3.interpolateRgb,
                         ["#122c91", "#03283c", "#18928a", "#31dfb4", "#97d3a8", "#daa64b", "#f46c1d", "#f83915", "#f71211"]
                             .reverse()
                             .concat(
@@ -90,7 +90,7 @@ class MobilityCyclePlotWeekdayChart extends Component {
                     .curve(d3.curveBasis);
 
         this.svg.selectAll("*").remove();
-        
+
         // axis
         let xAxis = g => g
             .attr("transform", `translate(0,${this.height - this.margin.bottom})`)
@@ -103,9 +103,11 @@ class MobilityCyclePlotWeekdayChart extends Component {
             .call(g => g.selectAll(".tick text").attr('text-anchor', 'start').style('text-transform', 'uppercase'));
 
         let yAxis = g => g
-            .attr("transform", `translate(${this.margin.left*2.5},0)`)
+            .attr("transform", `translate(${this.margin.left},0)`)
             .call(
-                d3.axisRight(scaleY).ticks(3)
+                d3.axisRight(scaleY)
+                .ticks(3)
+                .tickFormat( tick => tick == 0 ? "" : tick)
             )
             .call(g => g.select(".domain").remove())
             .call(g => g.selectAll(".tick line").remove())
@@ -179,7 +181,6 @@ class MobilityCyclePlotWeekdayChart extends Component {
     render () {        
 
         return <div style={{maxWidth:"99%"}} ref={this.elementRef}>
-            <h5>{MOBILITY_CATEGORIES[this.props.category]}</h5>
             <svg ref={node => this.node = node}></svg>
         </div>
         

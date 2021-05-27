@@ -7,6 +7,7 @@ import { Context } from './context/Context';
 
 import * as d3 from 'd3';
 import MobilityVsReproductionRateScroller from './ui/MobilityVsReproductionRateScroller';
+import MobilityCiclePlotWeekday from './ui/MobilityCyclePlotWeekday';
 
 
 class App extends Component {
@@ -47,10 +48,8 @@ class App extends Component {
                 data && <Provider data = {data}>
                     <Context.Consumer>
                         {
-                            context => <Fragment>
-                                <div style={{height:"10vh"}}>
-                                    A first Block
-                                </div>            
+                            context => <Fragment>   
+                                <MobilityCiclePlotWeekday {...context}/>
                                 <MobilityVsReproductionRateScroller {...context}/>
                                 <MobilityChangesWeeks {...context}/>
                             </Fragment>

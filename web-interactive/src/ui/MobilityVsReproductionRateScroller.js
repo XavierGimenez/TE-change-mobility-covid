@@ -149,7 +149,7 @@ class MobilityVsReproductionRateScroller extends Component {
                                     <p style={{marginTop:"25vh"}}>
                                         We have seen mobility for XXX, but you can inspect other categories as well:
                                     </p>
-                                    <p>
+                                    <p></p>
                                         <ButtonGroup vertical>
                                         {
                                             _.toPairs(MOBILITY_CATEGORIES)
@@ -161,8 +161,7 @@ class MobilityVsReproductionRateScroller extends Component {
                                                         { category[1] }
                                                     </Button>)
                                         }
-                                        </ButtonGroup>
-                                    </p>                                    
+                                        </ButtonGroup>                                 
                                 </div>
                             </Step>
                             <Step data={75}>

@@ -104,7 +104,7 @@ class MobilityChangesWeeksChart extends Component {
             line = d3.line()
                     .x( d => scaleX(d.weekDay) )
                     .y( d => scaleY(d.mobility_change_from_baseline) )
-                    .curve(d3.curveCardinal),
+                    .curve(d3.curveMonotoneX),
   
             scale2Gradient = d3.scaleLinear()
                                 .domain([0,1])

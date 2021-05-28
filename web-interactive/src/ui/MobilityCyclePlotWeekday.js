@@ -77,6 +77,7 @@ class MobilityCiclePlotWeekday extends Component {
                                     )
                                 )
                                 .filter(tuple => tuple[0] === 'residential_percent_change_from_baseline' || tuple[0] === 'workplaces_percent_change_from_baseline')
+                                .reverse()
                                 .map( (tuple, i) => <Row style={{marginBottom:'1em'}}>
                                         <Col xs={3} style={{borderRight:"1px solid rgba(42, 111, 219, 0.15)"}}>
                                             <h6 className="text-right">{MOBILITY_CATEGORIES[tuple[0]]}</h6>

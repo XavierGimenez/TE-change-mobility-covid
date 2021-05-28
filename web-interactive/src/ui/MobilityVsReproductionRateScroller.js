@@ -13,12 +13,14 @@ class MobilityVsReproductionRateScroller extends Component {
 
     constructor(props) {
         super(props);
+        this.defaultMobilityCategory = _.keys(MOBILITY_CATEGORIES)[3];
         this.state = {
             // scrollama data
             data: 0,
             steps: [5, 10, 15, 20, 30, 40, 50, 60, 70, 75],
             progress: 0,    
-            mobilityCategory: _.first(_.keys(MOBILITY_CATEGORIES))  
+            // set by default 'Retail and recreation'
+            mobilityCategory: this.defaultMobilityCategory
         };
     }
 
@@ -69,13 +71,13 @@ class MobilityVsReproductionRateScroller extends Component {
                             <Step data={10}>
                                 <div className="step step-large">
                                     <p>
-                                        <strong>At the beginning of march, with the reproduction rate at highest values, the infection was being able to spread rapidly through the population</strong>.
+                                        <strong>At the beginning of March, with the reproduction rate at highest values, the infection was being able to spread rapidly through the population</strong>.
                                     </p>
                                     <p>
-                                        The spread of the coronavirus had started likely weeks before: The virus was first confirmed to have spread to Spain on 31 January 2020, and by the end of February the community transmission was started in the whole country.
+                                        The spread of the coronavirus had started likely weeks before: The virus was first confirmed to have spread to Spain on <u>31 January 2020</u>, and by the end of February the community transmission was started in the whole country.
                                     </p>
                                     <p>
-                                        On 13 March, the State of Alarm was declared, initially for 15 days, and the lockdown was imposed on 14 March 2020.
+                                        <u>On 13 March</u>, the State of Alarm was declared, initially for 15 days, and the lockdown was imposed on <u>14 March 2020</u>.
                                     </p>
                                 </div>                                
                             </Step>
@@ -86,16 +88,15 @@ class MobilityVsReproductionRateScroller extends Component {
                                         As a result of the national lockdown, all residents are mandated to remain in their normal residences except to purchase food and medicines, work or attend emergencies. Lockdown restrictions also mandated the temporary closure of non-essential shops and businesses, including bars, restaurants, cafes, cinemas and commercial and retail businesses
                                     </p>
                                     <p>
-                                        <u>On 22 March</u>, Spanish Primer Minister announces that he will take the petition to extend the State of Alarm in the nation until 11 April.
+                                        <u>On 22 March</u>, Spanish Primer Minister announces that he will take the petition to extend the State of Alarm in the nation until <u>11 April</u>.
                                     </p>
-                                    <p>{Math.round(progress * 1000) / 10 + '%'}</p>
                                 </div>                                
                             </Step>
 
                             <Step data={20}>
                                 <div className="step">
                                     <p>
-                                        <strong>As a result of the lockdown, the reproduction rate goes down to levels below 0</strong>, which means that the disease will eventually stop spreading and not enough new people are being infected to sustain the outbreak.
+                                        <strong>Some weeks after the lockdown, the reproduction rate goes down to levels below 0</strong>, which means that the disease will eventually stop spreading and not enough new people are being infected to sustain the outbreak.
                                     </p>
                                     <p>On <u>13 April 2020</u>, there is a lifting of some restrictions and workers in some non-essential sectors are allowed to return to work. Some days later the government announces that children under the age of 14 will be able to go out on short walks with their parents or other adults living in the same household.
                                     </p>
@@ -104,7 +105,7 @@ class MobilityVsReproductionRateScroller extends Component {
                             <Step data={30}>
                                 <div className="step">
                                     <p>
-                                        April and May follow by with an intent of restoring at some extent levels of mobility. On 28 April, the government announced a plan for easing lockdown restrictions progressively, based on health indicators.
+                                        <strong>April and May follow by with an intent of restoring at some extent levels of mobility</strong>. On <u>28 April</u>, the government announced a plan for easing lockdown restrictions progressively, based on health indicators.
                                     </p>
                                     <p>The state of alarm expired at midnight of <u>Sunday 21 June</u>, and Spain entered a "new normality" phase, in which restrictions such as maximum occupancy in shops are handled by each autonomous community independently. At the state level, the government maintained the obligation to wear masks in public transportation and all other places where a minimum distance of 1.5 metres cannot be maintained.
                                     </p>
@@ -113,27 +114,27 @@ class MobilityVsReproductionRateScroller extends Component {
                             <Step data={40}>
                                 <div className="step">
                                     <p>
-                                        From July until September there is a resurgence in the spread, and in reponse to the increase in the number of cases some regional governments forbide gatherings of more than 10 people in public or private spaces, and advised residents to stay at home unless strictly necessary. A number of restrictions were imposed, including closing nightclubs, banning smoking outdoors if social distancing was not possible, and compulsory wearing of face masks in public.
+                                        <strong><u>From July until September</u> there is a resurgence in the spread</strong>, and in reponse to the increase in the number of cases some regional governments forbide gatherings of more than 10 people in public or private spaces, and advised residents to stay at home unless strictly necessary. A number of restrictions were imposed, including closing nightclubs, banning smoking outdoors if social distancing was not possible, and compulsory wearing of face masks in public.
                                     </p>
                                     <p>
-                                        The country recorded a series of high daily counts of infection since relaxing its restrictions in June 2020, with 3,715 cases reported on 19 August, giving it a cumulative figure of over 370,000 cases by that date. The country had the highest rate of infection in Europe, with 145 new cases per 100,000 population in the two weeks before 21 August 2020, compared to 51 in France and 21 in the UK.
+                                        The country recorded a series of high daily counts of infection since relaxing its restrictions in <u>June 2020</u>, with 3,715 cases reported on 19 August, giving it a cumulative figure of over 370,000 cases by that date. The country had the highest rate of infection in Europe, with 145 new cases per 100,000 population in the two weeks before <u>21 August 2020</u>, compared to 51 in France and 21 in the UK.
                                     </p>
                                 </div>
                             </Step>
                             <Step data={50}>
                                 <div className="step">
                                     <p>
-                                        During <u>October</u>, and due to high values of the reproduction rate, some partial lock-downs are set again, and finally on <u>25 October</u>, the government reimposed a state of emergency across the country and introduced a national curfew to counter the resurgence in coronavirus. Local authorities were also given powers to ban travel across different regions. The curfew was initially set to last 15 days, but Prime Ministed said that he would ask Parliament to extend it if necessary
+                                        During <u>October</u>, and due to high values of the reproduction rate, some partial lock-downs are set again, and finally on <u>25 October</u>, the government reimposed a state of emergency across the country and introduced a national curfew to counter the resurgence in coronavirus. Local authorities were also given powers to ban travel across different regions. The curfew was initially set to last 15 days, but Prime Ministed said that he would ask Parliament to extend it if necessary.
                                     </p>                                    
                                 </div>
                             </Step>
                             <Step data={60}>
                                 <div className="step">
                                     <p>
-                                        End of the 2020 and the first months of 2021 have been a back and forth of travel restrictions, closures and partial lock-downs, aimed to find a balance between the economic impact of the measures and the healthcare system. As the first vaccines started being administered to the populations on December, a progressive easing on lockdown restrictions can be applied based on health indicators.
+                                        <strong>End of the 2020 and the first months of 2021 have been a back and forth of travel restrictions, closures and partial lock-downs, aimed to find a balance between the economic impact of the measures and the healthcare system</strong>. As the first vaccines started being administered to the populations on December, a progressive easing on lockdown restrictions can be applied based on health indicators.
                                     </p>
                                     <p>
-                                        On 3 May, Spain managed to achieve the government's objective to have at least 5 million people fully vaccinated for the first week of May, more than 10% of the total population, and on 9 May, the State of emergency came to an end as Prime Minister refused to prolong it anymore, claiming that now it was the turn to trust "massive vaccination".
+                                        <u>On 3 May</u>, Spain managed to achieve the government's objective to have at least 5 million people fully vaccinated for the first week of May, more than 10% of the total population, and on <u>9 May</u>, the State of emergency came to an end as Prime Minister refused to prolong it anymore, claiming that now it was the turn to trust "massive vaccination".
                                         Nowadays, mobility seems to point out to normal levels, while the reproduction rate remains below 1.
                                     </p>
                                 </div>
@@ -141,16 +142,16 @@ class MobilityVsReproductionRateScroller extends Component {
                             <Step data={70}>
                                 <div className="step">
                                     <p>
-                                        <strong>How these last 14 months have been?</strong>
+                                        <h3 style={{color:'#bbd4ce'}}>How these last 14<br></br> months have been?</h3>
                                     </p>
                                     <p>
                                         As a summary, all these timeline can be summarized as a heatmap, As a summary, all these timeline can be summarized as a heatmap, As a summary, all these timeline can be summarized as a heatmap, As a summary, all these timeline can be summarized as a heatmap, As a summary, all these timeline can be summarized as a heatmap,
                                     </p>
-                                    <p style={{marginTop:"25vh"}}>
-                                        We have seen mobility for XXX, but you can inspect other categories as well:
+                                    <p style={{marginTop:"15vh"}}>
+                                        We have seen the relationship between changes in mobility and the reproduction rate of the infection, for <strong>{MOBILITY_CATEGORIES[this.defaultMobilityCategory]}</strong> in Spain, but you can inspect other categories as well:
                                     </p>
                                     <p></p>
-                                        <ButtonGroup vertical>
+                                        <ButtonGroup vertical style={{marginLeft:"1vw"}}>
                                         {
                                             _.toPairs(MOBILITY_CATEGORIES)
                                                 .map( (category, i) => <Button

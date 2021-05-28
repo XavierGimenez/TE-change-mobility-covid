@@ -3,7 +3,7 @@ import { MOBILITY_CATEGORIES } from '../common/constants';
 import * as _ from 'lodash';
 import * as d3 from 'd3';
 import {
-    formatDate
+    formatDate2
 } from '../util/timeUtils';
 
 import {
@@ -44,8 +44,8 @@ class MobilityCyclePlotWeekdayChart extends Component {
         const size = this.elementRef.current.getBoundingClientRect();
         
         this.width = size.width;
-        this.height = this.width * 0.3;
-        this.margin = {top: 10, right:50, bottom: 60, left: 20};
+        this.height = this.width * 0.25;
+        this.margin = {top: 0, right:100, bottom: 60, left: 20};
                 
         this.svg = d3.select(this.node)
             .attr('width', this.width)
@@ -152,7 +152,7 @@ class MobilityCyclePlotWeekdayChart extends Component {
             .attr('y1', scaleY(0))
             .attr('y2', scaleY(0))
             .attr("stroke", "#666")
-            .attr("stroke-dasharray", [2, 3])
+            .attr("stroke-dasharray", [1, 5])
             .attr('stroke-width', 1)
 
         // draw lines for each metric
@@ -175,18 +175,46 @@ class MobilityCyclePlotWeekdayChart extends Component {
                     .on("mouseenter", function(event) {
                         const pointer = d3.pointer(event, this);
                         const value = event.target.__data__;
-                        
                         // pending to apply bisect to get the data
                         tooltip
                             .attr("transform", `translate(${pointer[0]},${pointer[1] + 10})`)
                             .call(
                                 callout, 
-                                `${formatDate(new Date(value.date))}`
+                                `${formatDate2(new Date(scaleX.invert(pointer[0])))}`
                             );
                     })
                     .on("mouseleave", function() {
                         tooltip.call(callout, null);
                     });
+            
+            graph.append('circle')
+                .attr('cx', scaleX(scaleX.domain()[1]))
+                .attr('cy', scaleY(_.last(data).mobility_change_from_baseline))
+                .attr('r', 4)
+                .attr('stroke', 'whitesmoke')
+                .attr('stroke-width', 2)
+                .attr("fill", "url(#" + gradient + ")")
+                .on("mouseenter", function(event) {
+                    const pointer = d3.pointer(event, this);
+                    const value = event.target.__data__;
+                    // pending to apply bisect to get the data
+                    tooltip
+                        .attr("transform", `translate(${pointer[0]},${pointer[1] + 10})`)
+                        .call(
+                            callout, 
+                            `${formatDate2(new Date(scaleX.invert(pointer[0])))}`
+                        );
+                })
+                .on("mouseleave", function() {
+                    tooltip.call(callout, null);
+                });
+
+            graph.append('text')
+                .attr('class', 'text-shadow')
+                //.attr('x', this.margin.left)
+                .attr('y', scaleY(0))
+                .attr("alignment-baseline", "middle")
+                .text("Baseline")
         });
     }
 

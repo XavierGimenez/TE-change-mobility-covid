@@ -6,7 +6,16 @@ export const MOBILITY_CATEGORIES = {
     "retail_and_recreation_percent_change_from_baseline":   "Retail and recreation",
     "transit_stations_percent_change_from_baseline":        "Transit stations",
     "workplaces_percent_change_from_baseline":              "Workplaces"
+};
 
+// numeric values in files coming from R
+export const MOBILITY_CATEGORIES_INDEXES = {
+    "1":"transit_stations_percent_change_from_baseline",
+    "2":"workplaces_percent_change_from_baseline",
+    "3":"residential_percent_change_from_baseline",
+    "4":"retail_and_recreation_percent_change_from_baseline",
+    "5":"grocery_and_pharmacy_percent_change_from_baseline",
+    "6":"parks_percent_change_from_baseline"
 };
 
 export const COLORS = {

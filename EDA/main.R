@@ -15,12 +15,12 @@ owid_covid_data <- read.csv2(
 )
 
 countries_list <- list(
-  #c("NZ","New Zealand")
-  c("ES","Spain")
-  # c("GB","United Kingdom"),
-  # c("IL","Israel"),
-  # c("DE","Germany"),
-  # c("US","United States")
+  c("NZ","New Zealand"),
+  c("ES","Spain"),
+  c("GB","United Kingdom"),
+  c("IL","Israel"),
+  c("DE","Germany"),
+  c("US","United States")
 )
 
 for (country in countries_list) {
@@ -41,11 +41,12 @@ for (country in countries_list) {
       sep = ","
     )
   )
-  write.csv(
-    df,
-    file = paste0("data_output/", country_ISO_code, "_Region_Mobility_Report.csv"),
-    row.names = FALSE
-  )
+  
+  # write.csv(
+  #   df,
+  #   file = paste0("data_output/", country_ISO_code, "_Region_Mobility_Report.csv"),
+  #   row.names = FALSE
+  # )
   
   # just get date, reproduction rate and filter by dates with indicator values
   reproduction_rate <- owid_covid_data %>% 
@@ -66,7 +67,7 @@ for (country in countries_list) {
       workplaces_percent_change_from_baseline,
       residential_percent_change_from_baseline
     )
-  
+
   
   all_data <- inner_join(
     reproduction_rate,
@@ -96,16 +97,24 @@ for (country in countries_list) {
     drop_na()
   
   # add week days so we can find patterns in week days and weekend days
-  all_data <- all_data %>%
-    mutate(
-      week_day = as.numeric(format(as.Date(date), format = "%u"))
-    )
-    print(country_ISO_code)
+  # all_data <- all_data %>%
+  #   mutate(
+  #     week_day = as.numeric(format(as.Date(date), format = "%u"))
+  #   )
   
   # files for web (TODO: convert mobility categories to integers)
+  
+  # get only reproduction rate and change in mobility
+  all_data <- all_data %>% select(!c(reproduction_rate_week_rolling_avg,mobility_change_from_baseline_week_rolling_avg))
+  # make it light
+  all_data$metric[which(all_data$metric == "transit_stations_percent_change_from_baseline")] <- 1
+  all_data$metric[which(all_data$metric == "workplaces_percent_change_from_baseline")] <- 2
+  all_data$metric[which(all_data$metric == "residential_percent_change_from_baseline")] <- 3
+  all_data$metric[which(all_data$metric == "retail_and_recreation_percent_change_from_baseline")] <- 4
+  all_data$metric[which(all_data$metric == "grocery_and_pharmacy_percent_change_from_baseline")] <- 5
+  all_data$metric[which(all_data$metric == "parks_percent_change_from_baseline")] <- 6
   write.csv(
     x = all_data,
-    sep = ",",
     row.names = FALSE,
     file = paste0("data_output/", country_ISO_code , "_reproductionrate_vs_mobility.csv")
   )

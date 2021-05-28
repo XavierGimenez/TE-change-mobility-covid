@@ -27,7 +27,7 @@ class App extends Component {
         // load data
         this.setState({
             data: await d3.csv(
-                'data/GB_reproductionrate_vs_mobility.csv',
+                'data/ES_reproductionrate_vs_mobility.csv',
                 d => {
                     d.metric = _.get(MOBILITY_CATEGORIES_INDEXES, d.metric);
                     d.mobility_change_from_baseline = +d.mobility_change_from_baseline;

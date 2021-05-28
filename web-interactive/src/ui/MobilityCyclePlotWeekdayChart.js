@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { MOBILITY_CATEGORIES } from '../common/constants';
 import * as _ from 'lodash';
 import * as d3 from 'd3';
 import {
@@ -104,7 +103,7 @@ class MobilityCyclePlotWeekdayChart extends Component {
             .call(
                 d3.axisRight(scaleY)
                 .ticks(3)
-                .tickFormat( tick => tick == 0 ? "" : tick)
+                .tickFormat( tick => tick === 0 ? "" : tick)
             )
             .call(g => g.select(".domain").remove())
             .call(g => g.selectAll(".tick line").remove())
@@ -174,7 +173,6 @@ class MobilityCyclePlotWeekdayChart extends Component {
                     .attr('stroke-width', 3 )
                     .on("mouseenter", function(event) {
                         const pointer = d3.pointer(event, this);
-                        const value = event.target.__data__;
                         // pending to apply bisect to get the data
                         tooltip
                             .attr("transform", `translate(${pointer[0]},${pointer[1] + 10})`)
@@ -196,7 +194,6 @@ class MobilityCyclePlotWeekdayChart extends Component {
                 .attr("fill", "url(#" + gradient + ")")
                 .on("mouseenter", function(event) {
                     const pointer = d3.pointer(event, this);
-                    const value = event.target.__data__;
                     // pending to apply bisect to get the data
                     tooltip
                         .attr("transform", `translate(${pointer[0]},${pointer[1] + 10})`)

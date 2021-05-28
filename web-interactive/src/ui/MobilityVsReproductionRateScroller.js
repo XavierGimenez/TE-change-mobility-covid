@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
+import { Button, ButtonGroup} from 'react-bootstrap';
 import * as _ from 'lodash';
 import { Scrollama, Step} from 'react-scrollama';
 
@@ -42,7 +42,6 @@ class MobilityVsReproductionRateScroller extends Component {
     render() {
         const { 
             data, 
-            steps, 
             progress,
             mobilityCategory } = this.state;
 
@@ -141,9 +140,7 @@ class MobilityVsReproductionRateScroller extends Component {
                             </Step>
                             <Step data={70}>
                                 <div className="step">
-                                    <p>
-                                        <h3 style={{color:'#bbd4ce'}}>How these last 14<br></br> months have been?</h3>
-                                    </p>
+                                    <h3 style={{color:'#bbd4ce', marginLeft:"1vw"}}>How these last 14<br></br> months have been?</h3>
                                     <p>
                                         As a summary, all these timeline can be summarized as a heatmap, As a summary, all these timeline can be summarized as a heatmap, As a summary, all these timeline can be summarized as a heatmap, As a summary, all these timeline can be summarized as a heatmap, As a summary, all these timeline can be summarized as a heatmap,
                                     </p>

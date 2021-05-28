@@ -84,9 +84,9 @@ class MobilityChangesWeeksChart extends Component {
                                     .domain(d3.extent(data, d => d.week))
                                     .range([0.25, 2]),
 
-            scaleStrokeOpacity = d3.scaleLinear()
+            /*scaleStrokeOpacity = d3.scaleLinear()
                                     .domain(d3.extent(data, d => d.week))
-                                    .range([0.25, 0.7]),
+                                    .range([0.25, 0.7]),*/
             scaleColor = d3.scaleSequential(
                     [-30, 0, 20], 
                     d3.interpolateRgb("rgb(207, 216, 220)", "#4eeca3")
@@ -126,7 +126,7 @@ class MobilityChangesWeeksChart extends Component {
             .call(d3.axisRight(scaleY)
                 .ticks(4)
                 .tickSize(0)
-                .tickFormat( tick => tick == 0 ? "" : tick)
+                .tickFormat( tick => tick === 0 ? "" : tick)
             )
             .call(g => g.select(".domain").remove())
             .call(g => g.selectAll(".tick:not(:first-of-type) line")

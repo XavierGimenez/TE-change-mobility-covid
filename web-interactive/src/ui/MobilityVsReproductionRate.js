@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
+import { Col, Container, Row } from 'react-bootstrap';
 import * as _ from 'lodash';
 
-import { MOBILITY_CATEGORIES } from '../common/constants';
 import MobilityVsReproductionRateChart from './MobilityVsReproductionRateChart'
 
 

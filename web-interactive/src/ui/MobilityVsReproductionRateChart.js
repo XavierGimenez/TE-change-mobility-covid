@@ -67,7 +67,7 @@ class MobilityVsReproductionRateChart extends Component {
 
     // check visibilty of the storytelling captions
     evaluateCaptions() {
-        let { step, stepProgress, data } = this.props;
+        let { step, data } = this.props;
 
         this.showLineAt(0, 0);
         this.showLineAt(0, 0, this.timeLineClonedStepBefore);
@@ -331,8 +331,6 @@ class MobilityVsReproductionRateChart extends Component {
             .style("stroke-width", 1)
             .style("stroke", '#2a6fdb')//'#e8e8d7')
             .style('stroke-opacity', 0.5);
-
-        const t = this.svg.transition().duration(750);
         
         // transition are going to be done through a single tween, 
         // so manually keep track of old/new data points, since

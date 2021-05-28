@@ -1,5 +1,4 @@
 import * as d3 from 'd3';
-import { formatDefaultLocale } from 'd3';
 
 export const localYear = function(y) {
     let t0 = new Date();

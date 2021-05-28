@@ -11,7 +11,7 @@ export const textWrap = function(text, wrapWidth, yAxisAdjustment = 0) {
           y = text.attr("y"),
           dy = parseFloat(text.attr("dy")) - yAxisAdjustment,
           tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", `${dy}em`);
-      while (word = words.pop()) {
+      while ((word = words.pop())) {
         line.push(word);
         tspan.text(line.join(" "));
         if (tspan.node().getComputedTextLength() > wrapWidth) {
@@ -55,7 +55,7 @@ export const callout = (g, value) => {
                     .text(d => d)
             );
 
-        const { x, y, width: w, height: h } = text.node().getBBox();
+        const { y, width: w, height: h } = text.node().getBBox();
 
         text.attr("transform", `translate(${-w / 2},${15 - y})`);
         path.attr("d", `M${-w / 2 - 10},5H-5l5,-5l5,5H${w / 2 + 10}v${h + 20}h-${w + 20}z`);

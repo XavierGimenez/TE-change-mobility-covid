@@ -14,18 +14,21 @@ class MobilityCiclePlotWeekday extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            day: DAY_NAMES[1]
-        };
+        this.state = {};
     }
 
 
 
+    componentDidMount() {
+        this.setState({day:DAY_NAMES[1]});
+    }
+
     render() {
         let { data } = this.props,
+            { day } = this.state,
             groupedData;
 
-        if(data)
+        if(data && day)
             groupedData = _.groupBy(data, d => d.weekDay);
 
         return <Container fluid>
@@ -33,7 +36,7 @@ class MobilityCiclePlotWeekday extends Component {
                 <Row>
                     <Col xs={7}>
                         <h1>How was your day?</h1>
-                        <p>
+                        <p>ç
                             aslka ls kalsk lfldjs flshjfs gfdk aslka ls kalsk lfldjs flshjfs gfdkaslka ls kalsk lfldjs flshjfs gfdkaslka ls kalsk lfldjs flshjfs gfdkaslka ls kalsk lfldjs flshjfs gfdkaslka ls kalsk lfldjs flshjfs gfdkaslka ls kalsk lfldjs flshjfs gfdkaslka ls kalsk lfldjs flshjfs gfdkaslka ls kalsk lfldjs flshjfs gfdk
                         </p>
                     </Col>
@@ -53,6 +56,10 @@ class MobilityCiclePlotWeekday extends Component {
                                 </Button>)
                         }
                         </ButtonGroup>
+                    </Col>                    
+                </Row>
+                <Row>
+                    <Col>
                     </Col>
                 </Row>
                 <Row>
@@ -78,7 +85,7 @@ class MobilityCiclePlotWeekday extends Component {
                                 )
                                 .filter(tuple => tuple[0] === 'residential_percent_change_from_baseline' || tuple[0] === 'workplaces_percent_change_from_baseline')
                                 .reverse()
-                                .map( (tuple, i) => <Row style={{marginBottom:'1em'}}>
+                                .map( (tuple, i) => <Row style={{marginBottom:'1em'}} key={i}>
                                         <Col xs={3} style={{borderRight:"1px solid rgba(42, 111, 219, 0.15)"}}>
                                             <h6 className="text-right">{MOBILITY_CATEGORIES[tuple[0]]}</h6>
                                         </Col>
@@ -103,7 +110,7 @@ class MobilityCiclePlotWeekday extends Component {
                                         )
                                     )
                                     .filter(tuple => tuple[0] !== 'residential_percent_change_from_baseline' && tuple[0] !== 'workplaces_percent_change_from_baseline')
-                                    .map( (tuple, i) => <Row style={{marginBottom:'1em'}}>
+                                    .map( (tuple, i) => <Row style={{marginBottom:'1em'}} key={i}>
                                             <Col xs={3} style={{borderRight:"1px solid rgba(42, 111, 219, 0.15)"}}>
                                                 <h6 className="text-right">{MOBILITY_CATEGORIES[tuple[0]]}</h6>
                                             </Col>

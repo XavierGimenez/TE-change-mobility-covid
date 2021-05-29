@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import * as _ from 'lodash';
 
 export const textWrap = function(text, wrapWidth, yAxisAdjustment = 0) {
     text.each(function() {
@@ -80,7 +81,7 @@ export const ptsOnCurve = function(svgLine, numPoints, iStart = 0, iEnd = svgLin
 
 export const drawArrowsThroughLine = function(lineNode, placeholder) {
     let lineLength = lineNode.getTotalLength(),
-        headSize = 5,
+        headSize = 4,
         pointAtLengthScale = d3.scaleLinear().domain([0,1]).range([0, lineLength]);
     
         
@@ -108,6 +109,7 @@ export const drawArrowsThroughLine = function(lineNode, placeholder) {
 
         // draw arrow's head
         const arrowHead = arrow.append('g')
+            .attr('stroke-linecap',"round")
             .attr('transform', `translate(${xb2} ${yb2}) rotate(${betaDeg}) `);
 
         arrowHead.append('line')
@@ -117,6 +119,29 @@ export const drawArrowsThroughLine = function(lineNode, placeholder) {
         arrowHead.append('line')
             .attr('x1', -headSize).attr('x2', 0)
             .attr('y1', -headSize).attr('y2', 0);
+        
+        /*arrowHead.append('line')
+            .attr('x1', -headSize).attr('x2', -headSize)
+            .attr('y1', -headSize).attr('y2', headSize);*/
     });
 }
 
+
+export const drawArrowHeadLines = function(lineNode, placeholder) {
+    let lineLength = lineNode.getTotalLength(),
+        pointAtLengthScale = d3.scaleLinear().domain([0,1]).range([0, lineLength]);
+    
+    d3.ticks(0.1, 0.9, 8).forEach(step => {
+        let pointAtLength = pointAtLengthScale(step);
+        let pointsOnLines = ptsOnCurve(lineNode, 5, (pointAtLength)-10, (pointAtLength)+10);
+
+        placeholder.append('line')
+            .attr('x2', _.first(pointsOnLines)[0])
+            .attr('y2', _.first(pointsOnLines)[1])
+            .attr('x1', _.last(pointsOnLines)[0])
+            .attr('y1', _.last(pointsOnLines)[1])
+            .attr('marker-start', 'url(#arrow)')
+            .attr('stroke', '#ed8a0a')
+            .attr('fill', '#ed8a0a')
+    });
+}

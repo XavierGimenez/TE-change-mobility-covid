@@ -34,7 +34,8 @@ class MobilityVsReproductionRateChart extends Component {
         if(prevProps.mobilityCategory !== this.props.mobilityCategory)
             this.updateChart(this.props.data, prevProps.data);
 
-        if(prevProps.showTimeline !== this.props.showTimeline)
+        if( prevProps.showTimeline !== this.props.showTimeline || 
+            prevProps.mobilityCategory !== this.props.mobilityCategory)
             this.showTimeline(this.props.showTimeline, this.props.data);
 
         if(prevProps.step !== this.props.step)
@@ -42,34 +43,67 @@ class MobilityVsReproductionRateChart extends Component {
     }
 
 
+
     showTimeline(showTimeline, data) {
 
         let line = d3.line()
-            .x(d => this.scaleX(d.mobility_change_from_baseline))
-            .y(d => this.scaleY(d.reproduction_rate))
-            .curve(d3.curveCardinal.tension(0.5)),
-            lineNode;
+                .x(d => this.scaleX(d.mobility_change_from_baseline))
+                .y(d => this.scaleY(d.reproduction_rate))
+                .curve(d3.curveCardinal.tension(0.5)),
+            self = this,
+            l;
 
         this.placeHolderTimeline.selectAll('*').remove();
-        this.placeHolderContours.attr('opacity', showTimeline? 0.25:1);
+        this.placeHolderContours.attr('opacity', showTimeline? 0.5:1);
         if(showTimeline) {
             this.placeHolderTimeline
-                .attr("stroke", '#ed8a0a') //'#f6d912'
+                .attr("stroke", 'white') //'#f6d912'
                 .attr("stroke-width", 2)
-                .attr('opacity', 0.85)
                 //.style('mix-blend-mode','lighten'); // or screen
 
-            lineNode = this.placeHolderTimeline
+          l = this.placeHolderTimeline
                 .append("path")
                 .datum(data)
                 .attr("fill", "none")                
-                //.attr("stroke-dasharray", [2,3])
+                .attr("stroke-dasharray", [1,3])
                 .attr("stroke-width", 2)                
-                .attr("d", line)
-                .raise()
-                .node();
+                .attr("d", line);
 
-            drawArrowsThroughLine(lineNode, this.placeHolderTimeline);
+            l.clone()
+                .attr('stroke-opacity', 0.2)
+                .attr('stroke', 'whitesmoke')
+                .attr('stroke-dasharray', null)
+                .attr("stroke-width", 4);            
+            l.raise();
+
+            this.placeHolderTimeline.selectAll('circle')
+                .data(data)
+                .join('circle')
+                    .attr('class', 'date-points')
+                    .attr('cx', d => this.scaleX(d.mobility_change_from_baseline))
+                    .attr('cy', d => this.scaleY(d.reproduction_rate))
+                    .attr('r', d => d.date === _.first(data).date || d.date === _.last(data).date?  5 : 3)
+                    .attr('stroke', '#122c91')
+                    .attr('stroke-width', 2)
+                    .attr('stroke-opacity', 0.7)
+                    .attr('fill', 'whitesmoke')
+                    .style('cursor', 'pointer')
+                    .on("mouseenter", function(event) {
+                        const pointer = d3.pointer(event, this);
+                        const value = event.target.__data__;
+        
+                        self.tooltip
+                            .attr("transform", `translate(${pointer[0]},${pointer[1] + 15})`)
+                            .call(
+                                callout, 
+                                `${formatDate2(new Date(value.date))}`
+                            );
+                    })
+                    .on("mouseleave", function() {
+                        self.tooltip.call(callout, null);
+                    });
+
+            //drawArrowsThroughLine(l.node(), this.placeHolderTimeline);
         }
     }
 
@@ -128,6 +162,9 @@ class MobilityVsReproductionRateChart extends Component {
             this.showTooltipDynamic(datePointIndex[0]);
             this.showLineAt(datePointIndex[1], datePointIndex[1], this.timeLineClonedStepBefore)
         }
+
+        // last step?, hide timelines        
+        this.placeHolderLine.attr('opacity', (step === 70)? 0:1);
 
         // decide visibility of contours
         this.placeHolderContours.transition().duration(2000).attr('opacity', step >= 70? 1:0);
@@ -221,6 +258,28 @@ class MobilityVsReproductionRateChart extends Component {
             .attr('height', this.height)
             //.style('overflow', 'visible');
         
+        // add arrow marker
+        this.markerBoxWidth = 4;
+        this.markerBoxHeight = 4;
+        this.refX = this.markerBoxWidth / 2;
+        this.refY = this.markerBoxHeight / 2;
+        this.markerWidth = this.markerBoxWidth / 2;
+        this.markerHeight = this.markerBoxHeight / 2;
+
+        this.svg
+            .append('defs')
+            .append('marker')
+            .attr('id', 'arrow')
+            .attr('viewBox', [0, 0, this.markerBoxWidth, this.markerBoxHeight])
+            .attr('refX', this.refX)
+            .attr('refY', this.refY)
+            .attr('markerWidth', this.markerBoxWidth)
+            .attr('markerHeight', this.markerBoxHeight)
+            .attr('orient', 'auto-start-reverse')
+            .append('path')
+            .attr('d', d3.line()([[0, 0], [0, this.markerBoxWidth], [this.markerBoxWidth, this.markerBoxWidth/2]]))
+            .attr('stroke', '#ed8a0a');
+
         // add layers
         this.placeHolderContours = this.svg.append('g').attr('opacity', 0);
         this.placeHolderLine = this.svg.append('g');
@@ -323,7 +382,6 @@ class MobilityVsReproductionRateChart extends Component {
 
 
     updateChart(data, prevData) {
-        
         let contoursFunc = d3.contourDensity()
                         .x(d => this.scaleX(d.mobility_change_from_baseline))
                         .y(d => this.scaleY(d.reproduction_rate))
@@ -419,6 +477,7 @@ class MobilityVsReproductionRateChart extends Component {
             });        
 
         // correlation line
+        this.placeHolderLine.selectAll('path').remove();
         this.timeLine = this.placeHolderLine.append("path");
         let myLine = this.timeLine.datum(data)
                 .attr("fill", "none")

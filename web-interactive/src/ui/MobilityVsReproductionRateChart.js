@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import * as _ from 'lodash';
 import * as d3 from 'd3';
 import {
-    callout,
-    drawArrowsThroughLine
+    callout
 } from '../util/d3Utils';
 import {
     formatDate2

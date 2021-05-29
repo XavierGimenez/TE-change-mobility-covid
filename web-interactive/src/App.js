@@ -10,6 +10,7 @@ import { Context } from './context/Context';
 import MobilityVsReproductionRateScroller from './ui/MobilityVsReproductionRateScroller';
 import MobilityCiclePlotWeekday from './ui/MobilityCyclePlotWeekday';
 import { MOBILITY_CATEGORIES_INDEXES } from './common/constants';
+import MobilityVsReproductionRateGrid from './ui/MobilityVsReproductionRateGrid';
 
 
 class App extends Component {
@@ -52,6 +53,7 @@ class App extends Component {
                     <Context.Consumer>
                         {
                             context => <Fragment>   
+                                <MobilityVsReproductionRateGrid {...context}/>
                                 <MobilityCiclePlotWeekday {...context}/>
                                 <MobilityVsReproductionRateScroller {...context}/>
                                 <MobilityChangesWeeks {...context}/>

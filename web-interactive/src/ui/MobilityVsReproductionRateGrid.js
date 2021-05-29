@@ -20,7 +20,8 @@ class MobilityVsReproductionRateGrid extends Component {
 
 
     async componentDidMount() {
-        let countries = ['DE', 'GB', 'IL', 'NZ','US'];
+        //let countries = ['DE', 'GB', 'IL', 'NZ','US'];
+        let countries = [  "NZ", "SG", "AU", "IL", "KR", "CN", "DE", "ES", "BE", "FR", "GB", "IT", "PT", "US", "PE", "IN", "BR", "CO", "AR"]
         let promises = countries.map( 
             async country => await d3.csv(
                 'data/' + country + '_reproductionrate_vs_mobility.csv',

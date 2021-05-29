@@ -14,15 +14,28 @@ owid_covid_data <- read.csv2(
   stringsAsFactors = FALSE
 )
 
+# https://www.bloomberg.com/graphics/covid-resilience-ranking/
 countries_list <- list(
-  c("CN","China"),
-  c("DE","Germany"),
+  c("NZ","New Zealand"), # top 5 best countries
+  c("SG","Singapore"),
+  c("AU", "Australia"),
+  c("IL","Israel"),
+  c("KR","South Korea"),
+
+  c("DE","Germany"), # USA and some Europe
   c("ES","Spain"),
+  c("BE","Belgium"),
+  c("FR","France"),
   c("GB","United Kingdom"),
   c("IT","Italy"),
-  c("IL","Israel"),
-  c("NZ","New Zealand"),
-  c("US","United States")
+  c("PT","Portugal"),
+  c("US","United States"),
+
+  c("PE", "Peru"), # top 5 worst countries
+  c("IN", "India"),
+  c("BR", "Brazil"),
+  c("CO","Colombia"),
+  c("AR","Argentina")
 )
 
 for (country in countries_list) {
@@ -35,7 +48,8 @@ for (country in countries_list) {
     read.csv2(
       file = paste0("data/Region_Mobility_Report_CSVs/2020_", country_ISO_code, "_Region_Mobility_Report.csv"),
       header = TRUE,
-      sep = ","
+      sep = ",",
+      stringsAsFactors = FALSE
     ),
     read.csv2(
       file = paste0("data/Region_Mobility_Report_CSVs/2021_", country_ISO_code, "_Region_Mobility_Report.csv"),
@@ -59,7 +73,7 @@ for (country in countries_list) {
   
   # get only mobility data at country level
   df.all_regions_agg <- df %>%
-    filter(sub_region_1 == "") %>%
+    filter(sub_region_1 == "" | (is.logical(sub_region_1) & is.na(sub_region_1)) )%>%
     select(
       date, 
       retail_and_recreation_percent_change_from_baseline,

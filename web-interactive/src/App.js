@@ -45,7 +45,7 @@ class App extends Component {
 
     render() {
         let { data } = this.state;
-
+console.log(data)
         return (
             <Fragment>
             {
@@ -53,10 +53,10 @@ class App extends Component {
                     <Context.Consumer>
                         {
                             context => <Fragment>   
-                                <MobilityVsReproductionRateGrid {...context}/>
+                                <MobilityVsReproductionRateGrid/>
                                 <MobilityCiclePlotWeekday {...context}/>
                                 <MobilityVsReproductionRateScroller {...context}/>
-                                <MobilityChangesWeeks {...context}/>
+
                             </Fragment>
                         }
                     </Context.Consumer>

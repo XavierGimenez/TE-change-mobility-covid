@@ -69,8 +69,8 @@ class MobilityVsReproductionCountry extends Component {
                         .x(d => this.scaleX(d.mobility_change_from_baseline))
                         .y(d => this.scaleY(d.reproduction_rate))
                         .size([this.width - this.margin.left - this.margin.right, this.height - this.margin.top - this.margin.right])
-                        .bandwidth(5)
-                        .thresholds(15)(data),
+                        .bandwidth(10)
+                        .thresholds(30)(data),
             colors = ['#122c91', '#2a6fdb', '#48d6d2', '#81e9e6', '#fefcbf'],
             scaleColorLinear = d3.scaleLinear()
                 .domain(d3.range(0,1,1/colors.length))
@@ -91,7 +91,6 @@ class MobilityVsReproductionCountry extends Component {
         graph.append('g')
             .attr('opacity',0.9)
             .attr("fill", "none")
-            .attr("stroke", "whitesmoke")
             .attr("stroke-linejoin", "round")
             .selectAll("path")
             .data(contours)
@@ -133,17 +132,14 @@ class MobilityVsReproductionCountry extends Component {
             .attr('transform', 'translate(' + this.scaleX(0) + ',' + (this.height - this.margin.bottom) + ')')
             .attr('fill', '#777');
             
-        
-        
-
-    yAxisLabels.append('text')
-        .attr('dy',0)
-        .attr('y', -this.margin.left/4)
-        //.attr('font-weight', 'bold')
-        //.attr('class', 'axis-label-main')
-        .style('text-anchor', 'middle')
-        .style('text-shadow', null)
-        .text('Reproduction rate');
+        yAxisLabels.append('text')
+            .attr('dy',0)
+            .attr('y', -this.margin.left/4)
+            //.attr('font-weight', 'bold')
+            //.attr('class', 'axis-label-main')
+            .style('text-anchor', 'middle')
+            .style('text-shadow', null)
+            .text('Reproduction rate');
 
         xAxisLabels.append('text')
             .attr('dy',0)

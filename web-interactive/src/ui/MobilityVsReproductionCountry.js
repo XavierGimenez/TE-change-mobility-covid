@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import * as _ from 'lodash';
 import * as d3 from 'd3';
+import {hexbin} from 'd3-hexbin';
 
 
 
@@ -36,7 +37,7 @@ class MobilityVsReproductionCountry extends Component {
         const size = this.elementRef.current.getBoundingClientRect();
         this.width = size.width;
         this.height = this.width * 0.75;
-        this.margin = {top: 25, right:25, bottom: 25, left: 25};
+        this.margin = {top: 50, right:50, bottom: 50, left: 50};
 
         this.scaleX = d3.scaleLinear()
             .domain(
@@ -64,51 +65,45 @@ class MobilityVsReproductionCountry extends Component {
 
     updateChart(data) {        
         this.svg.selectAll("*").remove();
-
-        let contours = d3.contourDensity()
-                        .x(d => this.scaleX(d.mobility_change_from_baseline))
-                        .y(d => this.scaleY(d.reproduction_rate))
-                        .size([this.width - this.margin.left - this.margin.right, this.height - this.margin.top - this.margin.right])
-                        .bandwidth(10)
-                        .thresholds(30)(data),
-            colors = ['#122c91', '#2a6fdb', '#48d6d2', '#81e9e6', '#fefcbf'],
-            scaleColorLinear = d3.scaleLinear()
-                .domain(d3.range(0,1,1/colors.length))
-                .range(colors)
-                .interpolate(d3.interpolateLab)
-                .clamp(true)
-
-            
-        const threshold_domain = contours.map(d => d.value),
-            scaleColor = d3.scaleOrdinal()
-                                .domain(contours.map(d => d.value))
-                                .range(d3.quantize(scaleColorLinear, threshold_domain.length));
-
         // graph        
-        let graph = this.svg.append('g');
+        let graph = this.svg.append('g');     
+        let radius = 6;
+        let _hexbin = hexbin()
+        .x(d => this.scaleX(d.mobility_change_from_baseline))
+        .y(d => this.scaleY(d.reproduction_rate))
+            .radius(radius * this.width / (this.height - 1))
+            .extent([[this.margin.left, this.margin.top], [this.width - this.margin.right, this.height - this.margin.bottom]])
+        
+        let bins = _hexbin(data);
+        let color = d3.scaleSequential(
+                //d3.interpolateBlues
+                d3.piecewise(d3.interpolateHsl, ['#122c91', '#2a6fdb', '#48d6d2', '#81e9e6', 'whitesmoke'].reverse())
+            )
+            .domain([0, d3.max(bins, d => d.length) / 2]).clamp(true);
 
-        // contours
-        graph.append('g')
-            .attr('opacity',0.9)
-            .attr("fill", "none")
-            .attr("stroke-linejoin", "round")
+        let r = d3.scaleSqrt()
+            .domain([0, d3.max(bins, d => d.length)])
+            .range([0, _hexbin.radius() * Math.SQRT2]);
+
+
+        graph.append("g")
             .selectAll("path")
-            .data(contours)
-            .enter().append("path")
-                .attr("stroke-width", 1)
-                .attr("stroke-opacity", (d, i) => 1 - (i / 10) )
-                .attr('fill-opacity', 0.75)
-                .attr("fill", d => scaleColor(d.value))
-                .attr("d", d3.geoPath());
-         
+            .data(bins)
+            .join("path")
+            .attr('stroke', 'whitesmoke')
+            .attr('stroke-opacity', 0.8)
+            .attr("d", _hexbin.hexagon())
+            //.attr("d", d=> _hexbin.hexagon( r(d.length) ))
+            .attr("transform", d => `translate(${d.x},${d.y})`)
+            .attr("fill", d => color(d.length));
+
         // threshold lines
-         graph.append('line')
-            //.style('mix-blend-mode','color-burn')
-            .attr('class','treshold-line')
-            .attr("x1", this.margin.left)
-            .attr("y1", this.scaleY(1))
-            .attr("x2", this.width - this.margin.right)
-            .attr("y2", this.scaleY(1));
+        graph.append('line')                
+                .attr('class','treshold-line')
+                .attr("x1", this.margin.left)
+                .attr("y1", this.scaleY(1))
+                .attr("x2", this.width - this.margin.right)
+                .attr("y2", this.scaleY(1));
         
         graph.append('line')
             .attr('class','treshold-line')
@@ -118,38 +113,61 @@ class MobilityVsReproductionCountry extends Component {
             .attr("x2", this.scaleX(0));
         
         graph.selectAll('.treshold-line')
+            //.style('mix-blend-mode','color-burn')
             .style("stroke-dasharray",[1, 3])
             .style("stroke-width", 1)
-            .style("stroke", '#666')//'#e8e8d7')
+            .style("stroke", '#333')
             .style('stroke-opacity', 0.5);
             
     
-            // vertical axis
+        // vertical axis
         let yAxisLabels = graph.append('g')
             .attr('transform', 'translate(' + this.margin.left/2 + ',' + this.scaleY(1) + ') rotate(-90) ')
-            .attr('fill', '#777');
+            .attr('fill', '#777')
         let xAxisLabels = graph.append('g')
             .attr('transform', 'translate(' + this.scaleX(0) + ',' + (this.height - this.margin.bottom) + ')')
-            .attr('fill', '#777');
+            .attr('fill', '#777')
+            
             
         yAxisLabels.append('text')
             .attr('dy',0)
             .attr('y', -this.margin.left/4)
-            //.attr('font-weight', 'bold')
-            //.attr('class', 'axis-label-main')
             .style('text-anchor', 'middle')
             .style('text-shadow', null)
-            .text('Reproduction rate');
+            .text('R0');
 
         xAxisLabels.append('text')
             .attr('dy',0)
-            .attr('y', this.margin.bottom/2.5)
-            //.attr('font-weight', 'bold')
-          //  .attr('class', 'axis-label-main')
+            .attr('y', this.margin.bottom/1.5)
             .style('text-anchor', 'middle')
             .style('text-shadow', null)
-            .text('Weekly change in mobility (%)');
+            .text('Mobility change (%)')
 
+        let yAxis = g => g.attr("transform", `translate(${this.margin.left},0)`)
+            .call(
+                d3.axisLeft(this.scaleY)
+                .ticks(3)
+                .tickSize(0)
+                //.tickFormat( tick => tick === 1 ? "" : tick)
+            )
+            .call( 
+                g => g.selectAll('*')
+                .attr('stroke-width', 0)
+                .attr('stroke', '#d0d0d0')
+            );
+        let xAxis = g => g.attr("transform", `translate(0,${this.height - this.margin.bottom})`)
+            .call(
+                d3.axisBottom(this.scaleX)
+                .ticks(3)
+                .tickSize(0)
+            )
+            .call( 
+                g => g.selectAll('*')
+                    .attr('stroke-width', 0)
+                    .attr('stroke', '#d0d0d0')
+            );
+        this.svg.append("g").call(xAxis);
+        this.svg.append("g").call(yAxis);
     }
 
 

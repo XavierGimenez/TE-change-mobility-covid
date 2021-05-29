@@ -37,16 +37,19 @@ class MobilityVsReproductionCountry extends Component {
         const size = this.elementRef.current.getBoundingClientRect();
         this.width = size.width;
         this.height = this.width * 0.75;
-        this.margin = {top: 50, right:50, bottom: 50, left: 50};
+        this.margin = {top: 5, right:50, bottom: 150, left: 50};
 
         this.scaleX = d3.scaleLinear()
             .domain(
                 d3.extent(data, d => d.mobility_change_from_baseline)
+                    .map( d => _.clamp(d, -100, 100))
                     .map( (d,i) => {
                         return i === 0? d:(d<10? 10:d)
                 })
             )
             .range([0 + this.margin.left, this.width - this.margin.right]);
+
+        console.log(this.scaleX.domain());
 
         this.scaleY = d3.scaleLinear()
             .domain([0, d3.max(data, d => d.reproduction_rate)])
@@ -55,7 +58,7 @@ class MobilityVsReproductionCountry extends Component {
         this.svg = d3.select(this.node)
             .attr('width', this.width)
             .attr('height', this.height)
-            .style('overflow', 'visible');
+            //.style('overflow', 'visible');
 
         // add layers
         this.placeHolderContours = this.svg.append('g');
@@ -65,11 +68,15 @@ class MobilityVsReproductionCountry extends Component {
 
     updateChart(data) {        
         this.svg.selectAll("*").remove();
+        
         // graph        
         let graph = this.svg.append('g');     
-        let radius = 6;
+        let radius = 6; // * (Math.abs(this.scaleX.domain()[0]) / this.scaleX.domain()[1]);
+
+        //radius = radius > 6? 6:radius;
+
         let _hexbin = hexbin()
-        .x(d => this.scaleX(d.mobility_change_from_baseline))
+        .x(d => this.scaleX(_.clamp(d.mobility_change_from_baseline, -100, 100)))
         .y(d => this.scaleY(d.reproduction_rate))
             .radius(radius * this.width / (this.height - 1))
             .extent([[this.margin.left, this.margin.top], [this.width - this.margin.right, this.height - this.margin.bottom]])
@@ -125,7 +132,7 @@ class MobilityVsReproductionCountry extends Component {
             .attr('transform', 'translate(' + this.margin.left/2 + ',' + this.scaleY(1) + ') rotate(-90) ')
             .attr('fill', '#777')
         let xAxisLabels = graph.append('g')
-            .attr('transform', 'translate(' + this.scaleX(0) + ',' + (this.height - this.margin.bottom) + ')')
+            .attr('transform', 'translate(' + this.scaleX(0) + ',' + (this.height - this.margin.bottom + 35 ) + ')')
             .attr('fill', '#777')
             
             
@@ -137,8 +144,6 @@ class MobilityVsReproductionCountry extends Component {
             .text('R0');
 
         xAxisLabels.append('text')
-            .attr('dy',0)
-            .attr('y', this.margin.bottom/1.5)
             .style('text-anchor', 'middle')
             .style('text-shadow', null)
             .text('Mobility change (%)')

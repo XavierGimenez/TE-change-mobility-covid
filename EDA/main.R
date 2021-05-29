@@ -18,10 +18,10 @@ owid_covid_data <- read.csv2(
 countries_list <- list(
   c("NZ","New Zealand"), # top 5 best countries
   c("SG","Singapore"),
-  c("AU", "Australia"),
+  c("AU","Australia"),
   c("IL","Israel"),
   c("KR","South Korea"),
-
+  c("FI","Finland"),
   c("DE","Germany"), # USA and some Europe
   c("ES","Spain"),
   c("BE","Belgium"),
@@ -30,12 +30,13 @@ countries_list <- list(
   c("IT","Italy"),
   c("PT","Portugal"),
   c("US","United States"),
-
-  c("PE", "Peru"), # top 5 worst countries
-  c("IN", "India"),
-  c("BR", "Brazil"),
+  c("DK","Denmark"),
+  c("PE","Peru"), # top 5 worst countries
+  c("IN","India"),
+  c("BR","Brazil"),
   c("CO","Colombia"),
-  c("AR","Argentina")
+  c("AR","Argentina"),
+  c("MX", "Mexico")
 )
 
 for (country in countries_list) {

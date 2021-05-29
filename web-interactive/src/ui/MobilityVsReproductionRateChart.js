@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import * as _ from 'lodash';
 import * as d3 from 'd3';
 import {
-    callout
+    callout,
+    drawArrowsThroughLine
 } from '../util/d3Utils';
 import {
     formatDate2
@@ -30,12 +31,48 @@ class MobilityVsReproductionRateChart extends Component {
 
     componentDidUpdate(prevProps) {
         
-        if(prevProps.mobilityCategory !== this.props.mobilityCategory) {
+        if(prevProps.mobilityCategory !== this.props.mobilityCategory)
             this.updateChart(this.props.data, prevProps.data);
-        }
 
-        this.evaluateCaptions();        
+        if(prevProps.showTimeline !== this.props.showTimeline)
+            this.showTimeline(this.props.showTimeline, this.props.data);
+
+        if(prevProps.step !== this.props.step)
+            this.evaluateCaptions();        
     }
+
+
+    showTimeline(showTimeline, data) {
+
+        let line = d3.line()
+            .x(d => this.scaleX(d.mobility_change_from_baseline))
+            .y(d => this.scaleY(d.reproduction_rate))
+            .curve(d3.curveCardinal.tension(0.5)),
+            lineNode;
+
+        this.placeHolderTimeline.selectAll('*').remove();
+        this.placeHolderContours.attr('opacity', showTimeline? 0.25:1);
+        if(showTimeline) {
+            this.placeHolderTimeline
+                .attr("stroke", '#ed8a0a') //'#f6d912'
+                .attr("stroke-width", 2)
+                .attr('opacity', 0.85)
+                //.style('mix-blend-mode','lighten'); // or screen
+
+            lineNode = this.placeHolderTimeline
+                .append("path")
+                .datum(data)
+                .attr("fill", "none")                
+                //.attr("stroke-dasharray", [2,3])
+                .attr("stroke-width", 2)                
+                .attr("d", line)
+                .raise()
+                .node();
+
+            drawArrowsThroughLine(lineNode, this.placeHolderTimeline);
+        }
+    }
+
 
 
 
@@ -190,6 +227,7 @@ class MobilityVsReproductionRateChart extends Component {
         this.placeHolderDatePoints =  this.svg.append('g');
         this.tooltip = this.svg.append('g');
         this.tooltipDynamic = this.svg.append('g');
+        this.placeHolderTimeline = this.svg.append('g');
 
         // hidden paths to calculate distances to cut the correlation line
         this.pathB = this.svg.append("path");

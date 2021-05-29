@@ -19,9 +19,9 @@ class MobilityVsReproductionRate extends Component {
     render() {
         let { 
             data,
+            showTimeline,
             mobilityCategory,
-            step,
-            stepProgress
+            step
         } = this.props;
 
         return <Container fluid>
@@ -30,8 +30,8 @@ class MobilityVsReproductionRate extends Component {
                     <Col>
                         <MobilityVsReproductionRateChart 
                             step={step}
-                            stepProgress={stepProgress}
                             mobilityCategory={mobilityCategory} 
+                            showTimeline={showTimeline}
                             data={ 
                                 _.chain(data)
                                     .filter(d => d.metric === mobilityCategory)

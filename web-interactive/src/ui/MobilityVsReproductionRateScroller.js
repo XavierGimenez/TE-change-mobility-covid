@@ -20,7 +20,8 @@ class MobilityVsReproductionRateScroller extends Component {
             steps: [5, 10, 15, 20, 30, 40, 50, 60, 70, 75],
             progress: 0,    
             // set by default 'Retail and recreation'
-            mobilityCategory: this.defaultMobilityCategory
+            mobilityCategory: this.defaultMobilityCategory,
+            showTimeline: false
         };
     }
 
@@ -43,6 +44,7 @@ class MobilityVsReproductionRateScroller extends Component {
         const { 
             data, 
             progress,
+            showTimeline,
             mobilityCategory } = this.state;
 
 
@@ -52,6 +54,7 @@ class MobilityVsReproductionRateScroller extends Component {
                 <div className="graphic">
                     <MobilityVsReproductionRate 
                         mobilityCategory={mobilityCategory} 
+                        showTimeline={showTimeline}
                         {...this.props}
                         step={data}
                         stepProgress={progress}
@@ -159,7 +162,17 @@ class MobilityVsReproductionRateScroller extends Component {
                                                         { category[1] }
                                                     </Button>)
                                         }
-                                        </ButtonGroup>                                 
+                                        </ButtonGroup>
+                                        <form style={{marginLeft:"1vw"}}>
+                                            
+                                            <input
+                                                name="showLine"
+                                                type="checkbox"
+                                                checked={this.state.showTimeline}
+                                                onChange={() => { this.setState({showTimeline:!this.state.showTimeline})}}
+                                            />
+                                            <label style={{paddingLeft:"10px"}}>Show timeline</label>
+                                        </form>
                                 </div>
                             </Step>
                             <Step data={75}>

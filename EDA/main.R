@@ -15,11 +15,13 @@ owid_covid_data <- read.csv2(
 )
 
 countries_list <- list(
-  c("NZ","New Zealand"),
+  c("CN","China"),
+  c("DE","Germany"),
   c("ES","Spain"),
   c("GB","United Kingdom"),
+  c("IT","Italy"),
   c("IL","Israel"),
-  c("DE","Germany"),
+  c("NZ","New Zealand"),
   c("US","United States")
 )
 

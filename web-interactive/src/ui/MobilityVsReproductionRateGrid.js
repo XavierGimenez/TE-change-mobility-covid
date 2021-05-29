@@ -20,7 +20,7 @@ class MobilityVsReproductionRateGrid extends Component {
 
 
     async componentDidMount() {
-        let countries = ['DE', 'GB', 'IL', 'NZ'];
+        let countries = ['DE', 'GB', 'IL', 'NZ','US'];
         let promises = countries.map( 
             async country => await d3.csv(
                 'data/' + country + '_reproductionrate_vs_mobility.csv',
@@ -44,7 +44,7 @@ class MobilityVsReproductionRateGrid extends Component {
     render() {
         let { data } = this.state;
 
-        return <Container fluid>
+        return <Container>
                 <h1>Mobility Vs Reproduction</h1>
                
                 {   data && _.chunk(_.toPairs(data), 3).map( (chunk,i) => <Row key={i}>

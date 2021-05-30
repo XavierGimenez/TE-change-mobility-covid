@@ -25,7 +25,6 @@ class MobilityVsReproductionRate extends Component {
         } = this.props;
 
         return <Container fluid>
-                <h1>Mobility Vs Reproduction</h1>
                 <Row>
                     <Col>
                         <MobilityVsReproductionRateChart 
@@ -33,7 +32,7 @@ class MobilityVsReproductionRate extends Component {
                             mobilityCategory={mobilityCategory} 
                             showTimeline={showTimeline}
                             data={ 
-                                _.chain(data)
+                                _.chain(_.get(data, 'ES'))
                                     .filter(d => d.metric === mobilityCategory)
                                     .filter(d => (new Date(d.date)).getDay() === 1 )
                                     .value()

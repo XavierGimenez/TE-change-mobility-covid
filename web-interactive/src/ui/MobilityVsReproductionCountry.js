@@ -71,7 +71,7 @@ class MobilityVsReproductionCountry extends Component {
         
         // graph        
         let graph = this.svg.append('g');     
-        let radius = 6; // * (Math.abs(this.scaleX.domain()[0]) / this.scaleX.domain()[1]);
+        let radius = 4.5; // * (Math.abs(this.scaleX.domain()[0]) / this.scaleX.domain()[1]);
 
         let _hexbin = hexbin()
         .x(d => this.scaleX(_.clamp(d.mobility_change_from_baseline, -100, 100)))
@@ -81,7 +81,7 @@ class MobilityVsReproductionCountry extends Component {
         
         let bins = _hexbin(data);
         let color = d3.scaleSequential(
-                d3.piecewise(d3.interpolateHsl, ['#122c91', '#2a6fdb', '#48d6d2', '#81e9e6', 'whitesmoke'].reverse())
+                d3.piecewise(d3.interpolateHsl, ['#122c91', '#2a6fdb', '#48d6d2', '#81e9e6'].reverse())
             )
             .domain([0, d3.max(bins, d => d.length) / 2]).clamp(true);
 
@@ -133,10 +133,11 @@ class MobilityVsReproductionCountry extends Component {
             
         yAxisLabels.append('text')
             .attr('dy',0)
-            .attr('y', -this.margin.left/4)
+            //.attr('x', this.margin.left)
+            .attr('y', 3)
             .style('text-anchor', 'middle')
             .style('text-shadow', null)
-            .text('R0');
+            .text('R');
 
         xAxisLabels.append('text')
             .style('text-anchor', 'middle')
@@ -148,6 +149,7 @@ class MobilityVsReproductionCountry extends Component {
                 d3.axisLeft(this.scaleY)
                 .ticks(3)
                 .tickSize(0)
+                .tickFormat( tick => tick === 0 ? "" : tick)
             )
             .call( 
                 g => g.selectAll('*')

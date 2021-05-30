@@ -35,7 +35,6 @@ class MobilityCiclePlotWeekday extends Component {
         if(data && day)
             groupedData = _.groupBy(_.get(data, country), d => d.weekDay);
 
-        console.log(country, _.get(data, country))
         return <Fragment>
             <Container>
                 <Row>
@@ -49,11 +48,11 @@ class MobilityCiclePlotWeekday extends Component {
                 <hr/>
                 <Row className="align-items-end">
                     <Col xs={6}>
-                        <p>
+                        <p style={{margin:0}}>
                             Instead, changes in the mobility can be better understood looking at one specific week day through all the time coverage of the mobilty reports. Days of the week use to have its own idiosyncrasy, so although local gaps and spikes can still be present due to, i.e. public holidays, showing the cycle of the day-of-the-week data can reveal better effects because of the policies related to the COVID-19.
                         </p>
                     </Col>
-                    <Col>
+                    <Col style={{marginBottom:'2rem'}}>
                         <div><small>Select day of the week:</small></div>
                         <ButtonGroup size="sm">
                         { 
@@ -68,13 +67,11 @@ class MobilityCiclePlotWeekday extends Component {
                         }
                         </ButtonGroup>  
                         <p></p>
-                    </Col>
-                    <Col>                          
                         <div><small>Select country:</small></div>
                         <DropdownButton 
                             id="dropdown-item-button" 
                             variant="outline-info"
-                            size="xs"
+                            size="sm"
                             title={COUNTRY_LABELS[_.indexOf(COUNTRIES, this.state.country)]}>
                             {
                                 COUNTRY_LABELS.map( c => <Dropdown.Item key={c} onClick={() => this.setState({country: COUNTRIES[_.indexOf(COUNTRY_LABELS, c)]})}>
@@ -83,7 +80,6 @@ class MobilityCiclePlotWeekday extends Component {
                                 )
                             }
                         </DropdownButton>
-                        <p></p>
                     </Col>                    
                 </Row>
                 <hr className="ghost"/>

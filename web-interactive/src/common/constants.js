@@ -33,20 +33,20 @@ export const DAY_NAMES = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 export const DAY_NAMES_LABEL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 
-export const COUNTRIES = [  
+export const COUNTRIES = [
     // top better
     "NZ", "SG", "AU", "IL", "KR", "FI",
-    // top worst 
-    "PE", "IN", "BR", "CO", "AR", "MX",
     // others
-    "DE", "ES", "BE", "FR", "GB", "IT", "PT", "US", "DK"
+    "DK", "GB", "US", "ES", "PT", "FR", "BE", "DE", "IT",
+    // top worst 
+    "MX", "PE", "IN", "BR", "CO", "AR"
 ];
 
 export const COUNTRY_LABELS = [
      // top better
     "New Zealand", "Singapore", "Australia", "Israel", "South Korea", "Finland",
-    // top worst
-    "Peru", "India", "Brazil", "Colombia", "Argentina", "Mexico",
     // others
-    "Germany", "Spain", "Belgium", "France", "United Kingdom", "Italy", "Portugal", "United States", "Denmark"
+    "Denmark", "United Kingdom", "United States", "Spain", "Portugal", "France", "Belgium", "Germany", "Italy", 
+    // top worst
+    "Mexico", "Peru", "India", "Brazil", "Colombia", "Argentina"
 ];

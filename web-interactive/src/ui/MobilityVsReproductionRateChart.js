@@ -53,6 +53,7 @@ class MobilityVsReproductionRateChart extends Component {
             l;
 
         this.placeHolderTimeline.selectAll('*').remove();
+        this.placeHolderTimeline.attr('opacity', showTimeline? 1:0);
         this.placeHolderContours.attr('opacity', showTimeline? 0.5:1);
         if(showTimeline) {
             this.placeHolderTimeline
@@ -161,9 +162,15 @@ class MobilityVsReproductionRateChart extends Component {
             this.showTooltipDynamic(datePointIndex[0]);
             this.showLineAt(datePointIndex[1], datePointIndex[1], this.timeLineClonedStepBefore)
         }
+console.log(step)
+        // steps visible?
+        
+        this.placeHolderTimeline.attr('opacity', step === 70? (this.props.showTimeline? 1:0) : 0);
+        
+        this.placeHolderDatePoints.attr('opacity', (step < 10 || step > 60)? 0:1);
 
         // last step?, hide timelines        
-        this.placeHolderLine.attr('opacity', (step === 70)? 0:1);
+        this.placeHolderLine.attr('opacity', (step === 70)? 0:1);        
 
         // decide visibility of contours
         this.placeHolderContours.transition().duration(2000).attr('opacity', step >= 70? 1:0);
@@ -281,11 +288,11 @@ class MobilityVsReproductionRateChart extends Component {
 
         // add layers
         this.placeHolderContours = this.svg.append('g').attr('opacity', 0);
-        this.placeHolderLine = this.svg.append('g');
-        this.placeHolderDatePoints =  this.svg.append('g');
+        this.placeHolderLine = this.svg.append('g').attr('class', 'placeholder-line').attr('opacity', 0);
+        this.placeHolderDatePoints =  this.svg.append('g').attr('class', 'placeholder-date-points');
         this.tooltip = this.svg.append('g');
         this.tooltipDynamic = this.svg.append('g');
-        this.placeHolderTimeline = this.svg.append('g');
+        this.placeHolderTimeline = this.svg.append('g').attr('class', 'placeholder-timeline');
 
         // hidden paths to calculate distances to cut the correlation line
         this.pathB = this.svg.append("path");

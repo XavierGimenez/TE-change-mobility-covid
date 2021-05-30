@@ -70,8 +70,26 @@ section {
 }
 
 .background-colored {
+    color: #7fa4a4;
     background-color: @color-main;
+    h1 {
+        color: #bbd4ce;
+    }
 }
+
+.highlight {
+    cursor: pointer;
+    color: @color-main;
+    background-color: #bbd4ce;
+    //font-size: 14px;
+    font-weight: 400;
+    padding: 3px 6px;
+    margin: 0 1px;
+    white-space: nowrap;
+    border-radius: 3px;
+    pointer-events: stroke;
+}
+
 
 ////////////////////////////////////////////////////////////////
 // svg
@@ -108,12 +126,16 @@ g.axis-labels {
 // scrollama
 
 .scrollama {
+    background-color: @color-main;
     .graphics-container {
         color: #7fa4a4;
-        padding: 40vh 2vw 20vh;
+        padding: 15vh 2vw 0;
         display: flex;
         justify-content: space-between;
-        background-color: @color-main;
+        h3 {
+            color: #bbd4ce;
+        }
+        
     }
     .scroller {
         flex-basis: 35%;

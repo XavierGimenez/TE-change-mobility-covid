@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, ButtonGroup} from 'react-bootstrap';
+import { Button, ButtonGroup, Container, Row, Col} from 'react-bootstrap';
 import * as _ from 'lodash';
 import { Scrollama, Step} from 'react-scrollama';
 
@@ -50,6 +50,28 @@ class MobilityVsReproductionRateScroller extends Component {
 
 
         return <div className="scrollama">
+            <hr className="ghost"/>
+            <hr className="ghost"/>
+            <Container className="background-colored">
+                <Row>
+                    <Col/>
+                    <Col xs={7} className="text-center">
+                        <h1>Mobility constrains and its effect on the COVID-19 outbreak</h1>
+                    </Col>
+                    <Col/>
+                </Row>             
+                <hr className="ghost"/>   
+                <Row>
+                    <Col>
+                        <p>
+                            Since the outbreak of the 2019 novel coronavirus (COVID-19) pandemic, governments have been implementing containment measures aimed at mitigating the spread of the virus. Several policies restricted human mobility, intending to increase social distance, which has effectively slowed transmission. Restricting human mobility is an effective strategy used to control disease spread.
+                        </p>
+                        <p>
+                            Mobility restrictions as a response to control the ongoing COVID-19 pandemic aims to have a direct impact on the rate at which coronavirus infection is spreading: The reproduction rate (known as R0) is a way of rating coronavirus or any disease's ability to spread, or in other words, it is the number of people that one infected person will pass on a virus to, on average. If the reproduction rate is higher than one, then the number of cases keeps increasing, while values lower than one mean that each existing infection causes less than one new infection, so the disease will decline and eventually die out.
+                        </p>
+                    </Col>
+                </Row>
+            </Container>
             <div className="graphics-container">
                 <div className="graphic">
                     <MobilityVsReproductionRate 
@@ -61,6 +83,11 @@ class MobilityVsReproductionRateScroller extends Component {
                     />
                 </div>
                 <div className="scroller">
+                    {
+                        /*
+                            narrative storytelling for Spain
+                        */
+                    }
                     <Scrollama
                         onStepEnter={this.onStepEnter}
                         onStepExit={this.onStepExit}
@@ -68,7 +95,12 @@ class MobilityVsReproductionRateScroller extends Component {
                         onStepProgress={this.onStepProgress}
                         offset={0.3}>
                             <Step data={5}>
-                                <div className="step"/>
+                                <div className="step">
+                                    <h3>How the mobilty restrictions and the reproduction rate correlate together?</h3>
+                                    <p>
+                                        To confirm that constraining human mobility has an impact on the reproduction rate, let's inspect an specific case, looking at how changes in mobility in <span className="highlight">{MOBILITY_CATEGORIES[mobilityCategory]}</span> in <span className="highlight">Spain</span> have been helpful at controlling the COVID-19 outbreak.
+                                    </p>
+                                </div>
                             </Step>
                             <Step data={10}>
                                 <div className="step step-large">
@@ -143,12 +175,12 @@ class MobilityVsReproductionRateScroller extends Component {
                             </Step>
                             <Step data={70}>
                                 <div className="step">
-                                    <h3 style={{color:'#bbd4ce', marginLeft:"1vw"}}>How these last 14<br></br> months have been?</h3>
+                                    <h3>How these last 14 months have been?</h3>
                                     <p>
-                                        As a summary, all these timeline can be summarized as a heatmap, As a summary, all these timeline can be summarized as a heatmap, As a summary, all these timeline can be summarized as a heatmap, As a summary, all these timeline can be summarized as a heatmap, As a summary, all these timeline can be summarized as a heatmap,
+                                        All this back-and-forth between lifting the policies on mobility restrictions while keeping the outbreak under control ends up giving a global picture of the overall situation over the last year, summarizing how the whole country has been behaving in terms of this balance between isolating the population when necessary and mantaining coronavirus' reproduction rate under values of 1.
                                     </p>
                                     <p style={{marginTop:"15vh"}}>
-                                        We have seen the relationship between changes in mobility and the reproduction rate of the infection, for <strong>{MOBILITY_CATEGORIES[this.defaultMobilityCategory]}</strong> in Spain, but you can inspect other categories as well:
+                                        Such relationship is shown between reproduction rate and the mobility category <span class="highlight">{MOBILITY_CATEGORIES[mobilityCategory]}</span> in Spain, but you can inspect other categories as well:
                                     </p>
                                     <p></p>
                                         <ButtonGroup vertical style={{marginLeft:"1vw"}}>
@@ -163,8 +195,8 @@ class MobilityVsReproductionRateScroller extends Component {
                                                     </Button>)
                                         }
                                         </ButtonGroup>
-                                        <form style={{marginLeft:"1vw"}}>
-                                            
+                                        <br/><br/>
+                                        <form style={{marginLeft:"1vw"}}>                                            
                                             <input
                                                 name="showLine"
                                                 type="checkbox"

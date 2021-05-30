@@ -32,20 +32,6 @@ class App extends Component {
     async componentDidMount() {
 
         // load data
-        /*this.setState({
-            data: await d3.csv(
-                'data/ES_reproductionrate_vs_mobility.csv',
-                d => {
-                    d.metric = _.get(MOBILITY_CATEGORIES_INDEXES, d.metric);
-                    d.mobility_change_from_baseline = +d.mobility_change_from_baseline;
-                    d.reproduction_rate = +d.reproduction_rate;
-                    //d.mobility_change_from_baseline_week_rolling_avg = +d.mobility_change_from_baseline_week_rolling_avg;                    
-                    //d.reproduction_rate_week_rolling_avg = +d.reproduction_rate_week_rolling_avg;
-                    return d;
-                }
-            )
-        })*/
-
         let promises = COUNTRIES.map( 
             async country => await d3.csv(
                 'data/' + country + '_reproductionrate_vs_mobility.csv',
@@ -78,9 +64,10 @@ class App extends Component {
                         {
                             context => <Fragment>                                   
                                 <MobilityCiclePlotWeekday {...context}/>
-                            {/*    <MobilityVsReproductionRateScroller {...context}/>
-                                <MobilityVsReproductionRateGrid/>
-                                <MobilityChangesWeeks {...context}/>
+                                <hr className="ghost"/>
+                                <MobilityVsReproductionRateScroller {...context}/>
+                                <MobilityVsReproductionRateGrid {...context}/>
+                            {/*    <MobilityChangesWeeks {...context}/>
                             */}
                             </Fragment>
                         }

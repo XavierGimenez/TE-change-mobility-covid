@@ -52,11 +52,11 @@ console.log(data)
                 data && <Provider data = {data}>
                     <Context.Consumer>
                         {
-                            context => <Fragment>   
-                                <MobilityVsReproductionRateGrid/>
+                            context => <Fragment>                                   
                                 <MobilityCiclePlotWeekday {...context}/>
                                 <MobilityVsReproductionRateScroller {...context}/>
-
+                                <MobilityVsReproductionRateGrid/>
+                                <MobilityChangesWeeks {...context}/>
                             </Fragment>
                         }
                     </Context.Consumer>

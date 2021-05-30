@@ -43,8 +43,8 @@ class MobilityCyclePlotWeekdayChart extends Component {
         const size = this.elementRef.current.getBoundingClientRect();
         
         this.width = size.width;
-        this.height = this.width * 0.25;
-        this.margin = {top: 0, right:100, bottom: 60, left: 20};
+        this.height = this.width * 0.3;
+        this.margin = {top: 0, right:30, bottom: 40, left: 40};
                 
         this.svg = d3.select(this.node)
             .attr('width', this.width)
@@ -194,7 +194,6 @@ class MobilityCyclePlotWeekdayChart extends Component {
                 .attr("fill", "url(#" + gradient + ")")
                 .on("mouseenter", function(event) {
                     const pointer = d3.pointer(event, this);
-                    // pending to apply bisect to get the data
                     tooltip
                         .attr("transform", `translate(${pointer[0]},${pointer[1] + 10})`)
                         .call(
@@ -208,9 +207,10 @@ class MobilityCyclePlotWeekdayChart extends Component {
 
             graph.append('text')
                 .attr('class', 'text-shadow')
-                //.attr('x', this.margin.left)
-                .attr('y', scaleY(0))
-                .attr("alignment-baseline", "middle")
+                .attr('x', this.margin.left)
+                .attr('y', scaleY(0) - 3)
+                .attr("alignment-baseline", "end")
+                .attr('fill', '#555')
                 .text("Baseline")
         });
     }

@@ -58,7 +58,7 @@ class MobilityVsReproductionCountry extends Component {
         this.svg = d3.select(this.node)
             .attr('width', this.width)
             .attr('height', this.height)
-            //.style('overflow', 'visible');
+            .style('overflow', 'visible');
 
         // add layers
         this.placeHolderContours = this.svg.append('g');
@@ -73,8 +73,6 @@ class MobilityVsReproductionCountry extends Component {
         let graph = this.svg.append('g');     
         let radius = 6; // * (Math.abs(this.scaleX.domain()[0]) / this.scaleX.domain()[1]);
 
-        //radius = radius > 6? 6:radius;
-
         let _hexbin = hexbin()
         .x(d => this.scaleX(_.clamp(d.mobility_change_from_baseline, -100, 100)))
         .y(d => this.scaleY(d.reproduction_rate))
@@ -83,15 +81,13 @@ class MobilityVsReproductionCountry extends Component {
         
         let bins = _hexbin(data);
         let color = d3.scaleSequential(
-                //d3.interpolateBlues
                 d3.piecewise(d3.interpolateHsl, ['#122c91', '#2a6fdb', '#48d6d2', '#81e9e6', 'whitesmoke'].reverse())
             )
             .domain([0, d3.max(bins, d => d.length) / 2]).clamp(true);
 
-        let r = d3.scaleSqrt()
+        /*let r = d3.scaleSqrt()
             .domain([0, d3.max(bins, d => d.length)])
-            .range([0, _hexbin.radius() * Math.SQRT2]);
-
+            .range([0, _hexbin.radius() * Math.SQRT2]);*/
 
         graph.append("g")
             .selectAll("path")
@@ -120,7 +116,6 @@ class MobilityVsReproductionCountry extends Component {
             .attr("x2", this.scaleX(0));
         
         graph.selectAll('.treshold-line')
-            //.style('mix-blend-mode','color-burn')
             .style("stroke-dasharray",[1, 3])
             .style("stroke-width", 1)
             .style("stroke", '#333')
@@ -153,7 +148,6 @@ class MobilityVsReproductionCountry extends Component {
                 d3.axisLeft(this.scaleY)
                 .ticks(3)
                 .tickSize(0)
-                //.tickFormat( tick => tick === 1 ? "" : tick)
             )
             .call( 
                 g => g.selectAll('*')

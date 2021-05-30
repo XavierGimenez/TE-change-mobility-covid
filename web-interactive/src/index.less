@@ -20,6 +20,14 @@ p {
     line-height: 1.7;
 }
 
+hr {
+    width: 60%;
+    margin: 2rem auto;
+    &.ghost {
+        border: 1px solid rgba(0, 0, 0, 0);
+    }
+}
+
 button {
     font-family: @font-family !important;
     font-weight: 300 !important;
@@ -37,14 +45,26 @@ h2, h3, h4, h5 {
 }
 h6 {
     font-family: @font-family;
-    letter-spacing: 0.05em;    
+    letter-spacing: 0.03em;    
+    text-transform: uppercase;
+    font-size: 0.8rem;
 }
 
 section {
     margin: 10vh 5rem;
 }
 
-
+.chart-title{
+    font-family: @font-family;
+    font-weight: 400;
+    font-size: 1.4rem;
+}
+.chart-caption {
+    color: #999;
+    font-size: 65%;
+    font-weight: normal;
+    font-family: arial;
+}
 .text-shadow {
     text-shadow: @text-shadow-width @text-shadow-width 0 @color-bg, @text-shadow-width -@text-shadow-width 0 @color-bg, -@text-shadow-width @text-shadow-width 0 @color-bg, -@text-shadow-width -@text-shadow-width 0 @color-bg;
 }

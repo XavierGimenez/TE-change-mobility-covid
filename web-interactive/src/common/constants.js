@@ -22,12 +22,31 @@ export const COLORS = {
     BG: '#f8f8ee'
 }
 
-export const COUNTRIES = {
+/*export const COUNTRIES = {
     DEFAULT: { ISO: 'ES', LABEL: 'Spain' },
     ALL: [
         { ISO: 'ES', LABEL: 'Spain' }
     ]
-};
+};*/
 
 export const DAY_NAMES = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 export const DAY_NAMES_LABEL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+
+export const COUNTRIES = [  
+    // top better
+    "NZ", "SG", "AU", "IL", "KR", "FI",
+    // top worst 
+    "PE", "IN", "BR", "CO", "AR", "MX",
+    // others
+    "DE", "ES", "BE", "FR", "GB", "IT", "PT", "US", "DK"
+];
+
+export const COUNTRY_LABELS = [
+     // top better
+    "New Zealand", "Singapore", "Australia", "Israel", "South Korea", "Finland",
+    // top worst
+    "Peru", "India", "Brazil", "Colombia", "Argentina", "Mexico",
+    // others
+    "Germany", "Spain", "Belgium", "France", "United Kingdom", "Italy", "Portugal", "United States", "Denmark"
+];

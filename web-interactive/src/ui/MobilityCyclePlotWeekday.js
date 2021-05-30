@@ -1,11 +1,13 @@
 import React, { Component, Fragment } from 'react';
-import { Container, Row, Col, ButtonGroup, Button } from 'react-bootstrap';
+import { Container, Row, Col, ButtonGroup, Button, DropdownButton, Dropdown } from 'react-bootstrap';
 import * as _ from 'lodash';
 import MobilityCyclePlotWeekdayChart from './MobilityCyclePlotWeekdayChart';
 import { 
     DAY_NAMES,
     DAY_NAMES_LABEL,
-    MOBILITY_CATEGORIES 
+    MOBILITY_CATEGORIES,
+    COUNTRY_LABELS, 
+    COUNTRIES
 } from '../common/constants'; 
 
 
@@ -14,7 +16,9 @@ class MobilityCiclePlotWeekday extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            country: 'ES'
+        };
     }
 
 
@@ -25,12 +29,13 @@ class MobilityCiclePlotWeekday extends Component {
 
     render() {
         let { data } = this.props,
-            { day } = this.state,
+            { day, country } = this.state,
             groupedData;
 
         if(data && day)
-            groupedData = _.groupBy(data, d => d.weekDay);
+            groupedData = _.groupBy(_.get(data, country), d => d.weekDay);
 
+        console.log(country, _.get(data, country))
         return <Fragment>
             <Container>
                 <Row>
@@ -42,18 +47,14 @@ class MobilityCiclePlotWeekday extends Component {
                     </Col>
                 </Row>
                 <hr/>
-                <Row>
-                    <Col>
+                <Row className="align-items-end">
+                    <Col xs={6}>
                         <p>
-                            Instead, changes in the mobility can be better understood looking at one specific week day through all the time coverage of the mobilty reports. Days of the week use to have its own idiosyncrasy, so although local gaps and spikes can still be present due to, i.e. public holidays, 
+                            Instead, changes in the mobility can be better understood looking at one specific week day through all the time coverage of the mobilty reports. Days of the week use to have its own idiosyncrasy, so although local gaps and spikes can still be present due to, i.e. public holidays, showing the cycle of the day-of-the-week data can reveal better effects because of the policies related to the COVID-19.
                         </p>
                     </Col>
                     <Col>
-                        <p>
-                            showing the cycle of the day-of-the-week data can reveal better effects because of the policies related to the COVID-19.
-                        </p>
-                        
-                        <div className="text-center"><small>Select a day of the week:</small></div>
+                        <div><small>Select day of the week:</small></div>
                         <ButtonGroup size="sm">
                         { 
                             _.slice(DAY_NAMES_LABEL,1).concat(_.first(DAY_NAMES_LABEL))
@@ -62,10 +63,27 @@ class MobilityCiclePlotWeekday extends Component {
                                 variant="outline-info"
                                 active={DAY_NAMES[_.indexOf(DAY_NAMES_LABEL,day)] === this.state.day}
                                 onClick={() => this.setState({day:DAY_NAMES[_.indexOf(DAY_NAMES_LABEL,day)]})}>
-                                    {day}
+                                    {day.substring(0,3).toUpperCase()}
                                 </Button>)
                         }
-                        </ButtonGroup>
+                        </ButtonGroup>  
+                        <p></p>
+                    </Col>
+                    <Col>                          
+                        <div><small>Select country:</small></div>
+                        <DropdownButton 
+                            id="dropdown-item-button" 
+                            variant="outline-info"
+                            size="xs"
+                            title={COUNTRY_LABELS[_.indexOf(COUNTRIES, this.state.country)]}>
+                            {
+                                COUNTRY_LABELS.map( c => <Dropdown.Item key={c} onClick={() => this.setState({country: COUNTRIES[_.indexOf(COUNTRY_LABELS, c)]})}>
+                                        { c }
+                                    </Dropdown.Item>
+                                )
+                            }
+                        </DropdownButton>
+                        <p></p>
                     </Col>                    
                 </Row>
                 <hr className="ghost"/>
@@ -75,7 +93,7 @@ class MobilityCiclePlotWeekday extends Component {
                         <div className="chart-caption">Change relative to baseline (median values from the five‑week period 3 Jan – 6 Feb 2020)</div>
                     </Col>
                 </Row>   
-                <hr className="ghost"/>            
+                <hr className="ghost"/>                 
                 <Row>
                     <Col>
                     {   !_.isNil(groupedData) &&
@@ -103,7 +121,7 @@ class MobilityCiclePlotWeekday extends Component {
                                 )
                         }
                         <p>
-                            <small><strong>Residential and workplaces</strong> reveal clearly the overall trend in mobility change due to the spread. Altough they are not comparable (residential category shows a change in duration, while others measure a change in total visitors) and its percentage change is limited (people already spend much of the day at these places), they show the steadily recovery on the road to normality.</small>
+                            <strong>Residential and workplaces</strong> reveal clearly the overall trend in mobility change due to the spread. Altough they are not comparable (residential category shows a change in duration, while others measure a change in total visitors) and its percentage change is limited (people already spend much of the day at these places), they show the steadily recovery on the road to normality, mirroring each other for most of the countries.
                         </p>    
                     </Col>
                     <Col>

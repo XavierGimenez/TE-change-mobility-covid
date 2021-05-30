@@ -43,7 +43,7 @@ class MobilityCyclePlotWeekdayChart extends Component {
         const size = this.elementRef.current.getBoundingClientRect();
         
         this.width = size.width;
-        this.height = this.width * 0.3;
+        this.height = this.width * 0.25;
         this.margin = {top: 0, right:30, bottom: 40, left: 40};
                 
         this.svg = d3.select(this.node)

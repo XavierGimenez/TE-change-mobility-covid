@@ -64,7 +64,7 @@ class MobilityChangesWeeksChart extends Component {
             let date = new Date(d.date),
                 year = date.getFullYear();
             
-            d.weekDay = date.getDay();
+            //d.weekDay = date.getDay();
             d.week = year + ( year === 2021? week(d.date) + getNumOfWeeks(2021) : week(d.date) );
         });
         

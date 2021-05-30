@@ -11,9 +11,15 @@ import MobilityVsReproductionRateScroller from './ui/MobilityVsReproductionRateS
 import MobilityCiclePlotWeekday from './ui/MobilityCyclePlotWeekday';
 import { MOBILITY_CATEGORIES_INDEXES } from './common/constants';
 import MobilityVsReproductionRateGrid from './ui/MobilityVsReproductionRateGrid';
+import {
+    COUNTRIES,
+    COUNTRY_LABELS
+} from './common/constants';
+
 
 
 class App extends Component {
+
 
 
     constructor(props) {
@@ -26,7 +32,7 @@ class App extends Component {
     async componentDidMount() {
 
         // load data
-        this.setState({
+        /*this.setState({
             data: await d3.csv(
                 'data/ES_reproductionrate_vs_mobility.csv',
                 d => {
@@ -38,14 +44,32 @@ class App extends Component {
                     return d;
                 }
             )
-        })
+        })*/
+
+        let promises = COUNTRIES.map( 
+            async country => await d3.csv(
+                'data/' + country + '_reproductionrate_vs_mobility.csv',
+                d => {
+                    d.metric = _.get(MOBILITY_CATEGORIES_INDEXES, d.metric);
+                    d.mobility_change_from_baseline = +d.mobility_change_from_baseline;
+                    d.reproduction_rate = +d.reproduction_rate;
+                    d.weekDay = (new Date(d.date)).getDay();
+                    return d;
+                }
+            )
+        );
+        
+        let data = await Promise.all(promises);
+        this.setState({
+            data: _.zipObject(COUNTRIES, data)
+        });
+
     }
 
 
 
     render() {
         let { data } = this.state;
-console.log(data)
         return (
             <Fragment>
             {
@@ -54,15 +78,16 @@ console.log(data)
                         {
                             context => <Fragment>                                   
                                 <MobilityCiclePlotWeekday {...context}/>
-                                <MobilityVsReproductionRateScroller {...context}/>
+                            {/*    <MobilityVsReproductionRateScroller {...context}/>
                                 <MobilityVsReproductionRateGrid/>
                                 <MobilityChangesWeeks {...context}/>
+                            */}
                             </Fragment>
                         }
                     </Context.Consumer>
                 </Provider>
             }
-            </Fragment>            
+            </Fragment>
         );
     }    
 }

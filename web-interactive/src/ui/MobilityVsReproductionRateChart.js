@@ -162,7 +162,6 @@ class MobilityVsReproductionRateChart extends Component {
             this.showTooltipDynamic(datePointIndex[0]);
             this.showLineAt(datePointIndex[1], datePointIndex[1], this.timeLineClonedStepBefore)
         }
-console.log(step)
         // steps visible?
         
         this.placeHolderTimeline.attr('opacity', step === 70? (this.props.showTimeline? 1:0) : 0);

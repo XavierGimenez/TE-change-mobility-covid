@@ -49,8 +49,6 @@ class MobilityVsReproductionCountry extends Component {
             )
             .range([0 + this.margin.left, this.width - this.margin.right]);
 
-        console.log(this.scaleX.domain());
-
         this.scaleY = d3.scaleLinear()
             .domain([0, d3.max(data, d => d.reproduction_rate)])
             .range([this.height - this.margin.bottom, this.margin.top]);

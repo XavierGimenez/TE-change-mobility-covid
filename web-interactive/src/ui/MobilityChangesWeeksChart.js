@@ -45,7 +45,7 @@ class MobilityChangesWeeksChart extends Component {
     createChart() {
         const size = this.elementRef.current.getBoundingClientRect();
         
-        this.width = size.width;
+        this.width = size.width * 0.98;
         this.height = size.width * 0.5;
         this.margin = {top: 10, right:50, bottom: 80, left: 5};
                 
@@ -59,6 +59,8 @@ class MobilityChangesWeeksChart extends Component {
 
     updateChart(data) {
 
+        this.svg.selectAll("*").remove();
+        
         // set ids to weeks
         data.forEach( d => {
             let date = new Date(d.date),

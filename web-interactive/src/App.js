@@ -64,11 +64,10 @@ class App extends Component {
                         {
                             context => <Fragment>                                   
                                 <MobilityCiclePlotWeekday {...context}/>
-                                <hr className="ghost"/>
+                                <MobilityChangesWeeks {...context}/>                                
                                 <MobilityVsReproductionRateScroller {...context}/>
                                 <MobilityVsReproductionRateGrid {...context}/>
-                            {/*    <MobilityChangesWeeks {...context}/>
-                            */}
+                                
                             </Fragment>
                         }
                     </Context.Consumer>

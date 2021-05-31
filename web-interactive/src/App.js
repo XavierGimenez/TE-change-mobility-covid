@@ -109,10 +109,10 @@ class App extends Component {
                                                     <h3>REFERENCES</h3>
                                                     <small>
                                                         <ul>
-                                                            <li><a href="https://www.google.com/covid19/mobility" target="_blank" rel="noreferrer"></a>Google COVID-19 Community Mobility Reports</li>
-                                                            <li><a href="https://ourworldindata.org/coronavirus" target="_blank" rel="noreferrer"></a>Coronavirus Pandemic - Our World in Data</li>
-                                                            <li><a href="https://www.bloomberg.com/news/articles/2020-11-24/inside-bloomberg-s-covid-resilience-ranking" target="_blank" rel="noreferrer"></a>Bloomberg’s Covid Resilience Ranking</li>
-                                                            <li><a href="https://www.nature.com/articles/s41467-021-21358-2" target="_blank" rel="noreferrer"></a>Nature article: Reduction in mobility and COVID-19 transmission</li>
+                                                            <li><a href="https://www.google.com/covid19/mobility" target="_blank" rel="noreferrer">Google COVID-19 Community Mobility Reports</a></li>
+                                                            <li><a href="https://ourworldindata.org/coronavirus" target="_blank" rel="noreferrer">Coronavirus Pandemic - Our World in Data</a></li>
+                                                            <li><a href="https://www.bloomberg.com/news/articles/2020-11-24/inside-bloomberg-s-covid-resilience-ranking" target="_blank" rel="noreferrer">Bloomberg’s Covid Resilience Ranking</a></li>
+                                                            <li><a href="https://www.nature.com/articles/s41467-021-21358-2" target="_blank" rel="noreferrer">Nature article: Reduction in mobility and COVID-19 transmission</a></li>
                                                         </ul>
                                                     </small>                                                    
                                                 </Col>

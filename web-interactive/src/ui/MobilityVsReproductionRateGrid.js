@@ -83,7 +83,8 @@ class MobilityVsReproductionRateGrid extends Component {
             <Row>
                 <Col>
                     <p>
-                        So while it seems that there is a correlation between countries ranked at the bottom of the Bloomberg’s Covid Resilience Ranking and its capacity 
+                        In the context of the Bloomberg’s Covid Resilience Ranking, comparing countries ranked at the top (New Zealand, Singapore, Australia, Israel, South Korea and Finland) with those that are at the bottom (Mexico, Peru, India, Brazil, Colombia and Argentina) reveal that while the former group has been able to lift the policies on mobility restrictions during the pandemic, the latter group is still struggling at recovering normality levels.<br/>
+                        However, it has to be taken into account that these statements should deserve an in-depth analysis with a wider range of indicators and indexes at the national level, in order to raise awareness that this is likely not the full picture of how countries have behaved during the pandemic.
                     </p>
                 </Col>
             </Row>

@@ -53,7 +53,7 @@ class MobilityCiclePlotWeekday extends Component {
                 <Row>
                     <Col>
                         <p>
-                            These Community Mobility Reports can be helpful at providing insights into what has changed in response to policies aimed at combating COVID-19. However, movement trends over time show mixed phenomena since mobility variations can be either due to policies aimed at combating COVID-19, or because of more inherent reasons like people not going to places of work because of holiday    periods or public holidays, mobility variations between weekends and working days, or the citizenship not going to parks because of the period of the year.
+                            Google Community Mobility Reports can be helpful at providing insights into what has changed in response to policies aimed at combating COVID-19. However, movement trends over time show mixed phenomena since mobility variations can be either due to policies aimed at combating COVID-19, or because of more inherent reasons like people not going to places of work because of holiday    periods or public holidays, mobility variations between weekends and working days, or the citizenship not going to parks because of the period of the year.
                         </p>
                     </Col>
                 </Row>

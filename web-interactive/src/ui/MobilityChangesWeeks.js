@@ -34,7 +34,7 @@ class MobilityChangesWeeks extends Component {
         return <Container fluid>
             <section className="text-center">                
                 <Row className="justify-content-center">
-                    <Col xs={4}>
+                    <Col xs={4} style={{marginRight:"3vw"}}>
                         <p>
                             When looking at mobility trends considering weekly time spans and in comparison to 2020, this <span className="highlight year2021">year 2021</span> is reaching mobility levels close to the baseline.
                         </p>

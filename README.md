@@ -31,7 +31,8 @@ In the project directory, you can run:
 `yarn build` to build the app for production to the `build` folder. It correctly bundles React in production mode and optimizes the build for the best performance.
 
 
-### Further ideas
+### Further ideas
+
 - The visual features present in the connected scaterplots (["Connected Scatterplot for Presenting Paired Time Series"](http://steveharoz.com/research/connected_scatterplot/), Steve Haroz et al) look powerful when used in the right context, specially when doing narrative storytelling. 
 - When looking at the correlation between mobility changes and reproduction R, explore rolling averages on both metrics, to smooth local peaks. Also having a time window of 10 days between mobility and R to see effect on R due to previous mobility restrictions.
 - Wondering if there is a way to cluster countries based on its similar pandemic behaviour. Although this would present a lot of methodological problems (reliable data sources, complete and trusty enough), I would like to try some Principal Component Analysis on time series in order to get some preliminary results and compare them with e.g. the Bloomberg’s Covid Resilience Ranking.

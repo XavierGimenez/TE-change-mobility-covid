@@ -32,7 +32,8 @@ class MobilityCyclePlotWeekdayChart extends Component {
 
     componentDidUpdate(prevProps) {
         
-        if(prevProps.country !== this.props.country)
+        if(prevProps.country !== this.props.country ||
+            prevProps.day !== this.props.day)
             this.updateChart(this.props.data, this.props.callback);            
 
         if(prevProps.date !== this.props.date) {

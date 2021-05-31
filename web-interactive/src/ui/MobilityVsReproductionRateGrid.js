@@ -68,20 +68,25 @@ class MobilityVsReproductionRateGrid extends Component {
                     </Dropdown>
                 </Col>
             </Row>
-            <hr className="ghost"/>
-                               
-
-                {   data && _.chunk(_.toPairs(data), 3).map( (chunk,i) => <Row key={i}>
-                        {
-                            chunk.map( (country, j) => <Col key={j}>
-                                <Fragment>
-                                    <h6 className="text-center">{COUNTRY_LABELS[_.indexOf(COUNTRIES, country[0])]}</h6>
-                                    <MobilityVsReproductionCountry country={COUNTRY_LABELS[_.indexOf(COUNTRIES, country[0])]} data={_.filter(country[1], o => o.metric === this.state.mobilityCategory)}/>
-                                </Fragment>                            
-                            </Col>)
-                        }
-                    </Row>)
-                }
+            <hr className="ghost"/>                            
+            {   data && _.chunk(_.toPairs(data), 3).map( (chunk,i) => <Row key={i}>
+                    {
+                        chunk.map( (country, j) => <Col key={j}>
+                            <Fragment>
+                                <h6 className="text-center">{COUNTRY_LABELS[_.indexOf(COUNTRIES, country[0])]}</h6>
+                                <MobilityVsReproductionCountry country={COUNTRY_LABELS[_.indexOf(COUNTRIES, country[0])]} data={_.filter(country[1], o => o.metric === this.state.mobilityCategory)}/>
+                            </Fragment>                            
+                        </Col>)
+                    }
+                </Row>)
+            }
+            <Row>
+                <Col>
+                    <p>
+                        So while it seems that there is a correlation between countries ranked at the bottom of the Bloomberg’s Covid Resilience Ranking and its capacity 
+                    </p>
+                </Col>
+            </Row>
         </Container>
     }
 }

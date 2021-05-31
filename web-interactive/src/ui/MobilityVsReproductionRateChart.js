@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import * as _ from 'lodash';
 import * as d3 from 'd3';
 import {
-    callout
+    callout,
+    textWrap
 } from '../util/d3Utils';
 import {
     formatDate2
@@ -37,8 +38,10 @@ class MobilityVsReproductionRateChart extends Component {
             prevProps.mobilityCategory !== this.props.mobilityCategory)
             this.showTimeline(this.props.showTimeline, this.props.data);
 
-        if(prevProps.step !== this.props.step)
+        if(prevProps.step !== this.props.step) {
             this.evaluateCaptions();        
+            this.showAnnotations();
+        }
     }
 
 
@@ -122,7 +125,7 @@ class MobilityVsReproductionRateChart extends Component {
             case 0:
                 text = formatDate2(new Date(datum.date)) + 
                     "\nReproduction rate of " + datum.reproduction_rate + 
-                    "\nNo Lockdown applied yet. ";
+                    "\nNo lockdown applied yet. ";
                 break;
             default:
                 text=formatDate2(new Date(datum.date));
@@ -134,6 +137,92 @@ class MobilityVsReproductionRateChart extends Component {
             .call(callout, `${text}`);
     }
 
+
+
+    showAnnotations() {
+        let { step } = this.props,
+            g = this.placeHolderAnnotations;
+
+        g.selectAll("*").remove();
+
+        if(this.props.mobilityCategory !== "retail_and_recreation_percent_change_from_baseline")
+            return;
+
+        switch(step) {
+            case 15: 
+                g.append('text')
+                    .attr('class', 'arrow')
+                    .attr('x', this.scaleX(-40))
+                    .attr('y', this.scaleY(2.57))
+                    .text("←")                
+                g.append('g')
+                    .attr('transform', 'translate(' + this.scaleX(-40) + ',' + this.scaleY(2.5) + ')')
+                    .append('text').attr('dy', 0)
+                    .text("National lockdown reduces mobility to a minimum.")
+                    .call(textWrap, 150);
+                break;
+            case 20: 
+                g.append('text')
+                    .attr('class', 'arrow')
+                    .attr('x', this.scaleX(-80))
+                    .attr('y', this.scaleY(1.5))
+                    .text("↓")                
+                g.append('g')
+                    .attr('transform', 'translate(' + this.scaleX(-77) + ',' + this.scaleY(1.5) + ')')
+                    .append('text').attr('dy', 0)
+                    .text("Reproduction rate goes below 1 thanks to the reduction in mobility.")
+                    .call(textWrap, 200);
+                break; 
+            case 30: 
+                g.append('text')
+                    .attr('class', 'arrow')
+                    .attr('x', this.scaleX(-60))
+                    .attr('y', this.scaleY(1.17))
+                    .text("→")                
+                g.append('g')
+                    .attr('transform', 'translate(' + this.scaleX(-68) + ',' + this.scaleY(1.1) + ')')
+                    .append('text').attr('dy', 0)
+                    .text("Easing lockdown restrictions progressively, while keeping the R below 1.")
+                    .call(textWrap, 200);
+                break;
+            case 40: 
+                g.append('text')
+                    .attr('class', 'arrow')
+                    .attr('x', this.scaleX(1))
+                    .attr('y', this.scaleY(1.5))
+                    .text("↑")                
+                g.append('g')
+                    .attr('transform', 'translate(' + this.scaleX(4) + ',' + this.scaleY(1.5) + ')')
+                    .append('text').attr('dy', 0)
+                    .text("The 'new normality phase' triggers a resurgence in the spread.")
+                    .call(textWrap, 175);
+                break;      
+            case 50: 
+                g.append('text')
+                    .attr('class', 'arrow')
+                    .attr('x', this.scaleX(-35))
+                    .attr('y', this.scaleY(1.4))
+                    .text("←")                
+                g.append('g')
+                    .attr('transform', 'translate(' + this.scaleX(-37) + ',' + this.scaleY(1.6) + ')')
+                    .append('text').attr('dy', 0)
+                    .text("Partial lock-downs keep the reproduction rate to controllable levels.")
+                    .call(textWrap, 160);
+                break;
+            case 60: 
+                    g.append('text')
+                        .attr('class', 'arrow')
+                        .attr('x', this.scaleX(-35))
+                        .attr('y', this.scaleY(1.75))
+                        .text("↺")                
+                    g.append('g')
+                        .attr('transform', 'translate(' + this.scaleX(-40) + ',' + this.scaleY(1.9) + ')')
+                        .append('text').attr('dy', 0)
+                        .text("Back and forth of mobility restrictions and R around 1.")
+                        .call(textWrap, 160);                    
+                break;                                                                
+        }
+    }
 
 
     // check visibilty of the storytelling captions
@@ -261,7 +350,7 @@ class MobilityVsReproductionRateChart extends Component {
         this.svg = d3.select(this.node)
             .attr('width', this.width)
             .attr('height', this.height)
-            //.style('overflow', 'visible');
+            .style('overflow', 'hidden');
         
         // add arrow marker
         this.markerBoxWidth = 4;
@@ -292,6 +381,7 @@ class MobilityVsReproductionRateChart extends Component {
         this.tooltip = this.svg.append('g');
         this.tooltipDynamic = this.svg.append('g');
         this.placeHolderTimeline = this.svg.append('g').attr('class', 'placeholder-timeline');
+        this.placeHolderAnnotations = this.svg.append('g').attr('class', 'placeholder-annotations')
 
         // hidden paths to calculate distances to cut the correlation line
         this.pathB = this.svg.append("path");

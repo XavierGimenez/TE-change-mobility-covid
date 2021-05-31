@@ -68,7 +68,7 @@ class App extends Component {
                                     <Container>
                                         <Row>
                                             <Col xs={7}>                                        
-                                                <h1 className="main">Reduction in mobility and COVID-19 transmission</h1>
+                                                <h1 className="main">Restriccions in mobility and COVID-19 transmission</h1>
                                             </Col>
                                         </Row>
                                         <Row>
@@ -92,20 +92,30 @@ class App extends Component {
                                     <section className="footer">
                                         <Container fluid>
                                             <Row>
-                                                <Col></Col>
-                                                <Col>
-                                                    <h3>MOTIVATION</h3>
+                                                <Col style={{color:"#bbd4ce"}}>
+                                                    <h3>BACKGROUND</h3>
                                                     <p>
-                                                        Is the lockdown an effective measure to control the COVID-19 outbreak?<br/>This website explores the patterns between changes in population mobility due to COVID-19 policies and the effect on the spread of the virus and its reproduction rate.
+                                                        Is the lockdown an effective measure to control the COVID-19 outbreak? This website explores the patterns between changes in population mobility due to COVID-19 policies and the effect on the spread of the virus and its reproduction rate.
                                                     </p>
-                                                </Col>                                                
+                                                </Col>
+                                                <Col xs={1}/>                                                
                                                 <Col>
                                                     <h3>DATA</h3>
                                                     <p>
                                                         This site presents <a href="https://www.google.com/covid19/mobility/" target="_blank" rel="noreferrer">Google COVID-19 Community Mobility Reports</a> data on a set of countries of interest, as well as data related to the coronavirus pandemic from <a href="https://ourworldindata.org/coronavirus" target="_blank" rel="noreferrer">Our World in Data website.</a>
                                                     </p>
                                                 </Col>
-                                                <Col></Col>
+                                                <Col>
+                                                    <h3>REFERENCES</h3>
+                                                    <small>
+                                                        <ul>
+                                                            <li><a href="https://www.google.com/covid19/mobility" target="_blank" rel="noreferrer"></a>Google COVID-19 Community Mobility Reports</li>
+                                                            <li><a href="https://ourworldindata.org/coronavirus" target="_blank" rel="noreferrer"></a>Coronavirus Pandemic - Our World in Data</li>
+                                                            <li><a href="https://www.bloomberg.com/news/articles/2020-11-24/inside-bloomberg-s-covid-resilience-ranking" target="_blank" rel="noreferrer"></a>Bloomberg’s Covid Resilience Ranking</li>
+                                                            <li><a href="https://www.nature.com/articles/s41467-021-21358-2" target="_blank" rel="noreferrer"></a>Nature article: Reduction in mobility and COVID-19 transmission</li>
+                                                        </ul>
+                                                    </small>                                                    
+                                                </Col>
                                             </Row>
                                         </Container>
                                     </section>                                    

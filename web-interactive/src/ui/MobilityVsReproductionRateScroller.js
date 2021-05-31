@@ -119,10 +119,10 @@ class MobilityVsReproductionRateScroller extends Component {
                             <Step data={15}>
                                 <div className="step step-large">
                                     <p>
-                                        As a result of the national lockdown, all residents are mandated to remain in their normal residences except to purchase food and medicines, work or attend emergencies. Lockdown restrictions also mandated the temporary closure of non-essential shops and businesses, including bars, restaurants, cafes, cinemas and commercial and retail businesses
+                                        As a result of the national lockdown, all residents are compelled to remain in their normal residences except to purchase food and medicines, work or attend emergencies. Lockdown restrictions also mandated the temporary closure of non-essential shops and businesses, including bars, restaurants, cafes, cinemas and commercial and retail businesses
                                     </p>
                                     <p>
-                                        <u>On 22 March</u>, Spanish Primer Minister announces that he will take the petition to extend the State of Alarm in the nation until <u>11 April</u>.
+                                        <u>On 23 March</u>, Spanish Primer Minister announces that he will take the petition to extend the State of Alarm in the nation until <u>11 April</u>.
                                     </p>
                                 </div>                                
                             </Step>
@@ -130,7 +130,7 @@ class MobilityVsReproductionRateScroller extends Component {
                             <Step data={20}>
                                 <div className="step">
                                     <p>
-                                        <strong>Some weeks after the lockdown, the reproduction rate goes down to levels below 0</strong>, which means that the disease will eventually stop spreading and not enough new people are being infected to sustain the outbreak.
+                                        <strong>Some weeks after the lockdown, the reproduction rate goes down to levels below 1</strong>, which means that the disease will eventually stop spreading and not enough new people are being infected to sustain the outbreak.
                                     </p>
                                     <p>On <u>13 April 2020</u>, there is a lifting of some restrictions and workers in some non-essential sectors are allowed to return to work. Some days later the government announces that children under the age of 14 will be able to go out on short walks with their parents or other adults living in the same household.
                                     </p>
@@ -139,7 +139,7 @@ class MobilityVsReproductionRateScroller extends Component {
                             <Step data={30}>
                                 <div className="step">
                                     <p>
-                                        <strong>April and May follow by with an intent of restoring at some extent levels of mobility</strong>. On <u>28 April</u>, the government announced a plan for easing lockdown restrictions progressively, based on health indicators.
+                                        <strong>April and May are followed by with an intent of restoring at some extent levels of mobility</strong>. On <u>28 April</u>, the government announced a plan for easing lockdown restrictions progressively, based on health indicators.
                                     </p>
                                     <p>The state of alarm expired at midnight of <u>Sunday 21 June</u>, and Spain entered a "new normality" phase, in which restrictions such as maximum occupancy in shops are handled by each autonomous community independently. At the state level, the government maintained the obligation to wear masks in public transportation and all other places where a minimum distance of 1.5 metres cannot be maintained.
                                     </p>
@@ -165,7 +165,7 @@ class MobilityVsReproductionRateScroller extends Component {
                             <Step data={60}>
                                 <div className="step">
                                     <p>
-                                        <strong>End of the 2020 and the first months of 2021 have been a back and forth of travel restrictions, closures and partial lock-downs, aimed to find a balance between the economic impact of the measures and the healthcare system</strong>. As the first vaccines started being administered to the populations on December, a progressive easing on lockdown restrictions can be applied based on health indicators.
+                                        <strong>The end of the 2020 and the first months of 2021 have been a back and forth of travel restrictions, closures and partial lock-downs, aimed to find a balance between the economic impact of the measures and the healthcare system</strong>. As the first vaccines started being administered to the populations on December, a progressive easing on lockdown restrictions can be applied based on health indicators.
                                     </p>
                                     <p>
                                         <u>On 3 May</u>, Spain managed to achieve the government's objective to have at least 5 million people fully vaccinated for the first week of May, more than 10% of the total population, and on <u>9 May</u>, the State of emergency came to an end as Prime Minister refused to prolong it anymore, claiming that now it was the turn to trust "massive vaccination".

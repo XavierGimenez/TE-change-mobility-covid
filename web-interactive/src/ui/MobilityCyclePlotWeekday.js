@@ -61,7 +61,7 @@ class MobilityCiclePlotWeekday extends Component {
                 <Row className="align-items-end">
                     <Col xs={6}>
                         <p style={{margin:0}}>
-                            Instead, changes in the mobility can be better understood looking at one specific week day through all the time coverage of the mobilty reports. Days of the week use to have its own idiosyncrasy, so although local gaps and spikes can still be present due to, i.e. public holidays, showing the cycle of the day-of-the-week data can reveal better effects because of the policies related to the COVID-19.
+                            Instead, changes in the mobility can be better understood by looking at one specific week day through all the time coverage of the mobilty reports. Each day of the week has its own idiosyncrasy, so although local gaps and spikes can still be present due to, e.g. public holidays, showing the cycle of the day-of-the-week data can reveal better effects because of the policies related to the COVID-19.
                         </p>
                     </Col>
                     <Col style={{marginBottom:'2rem'}}>
@@ -84,7 +84,7 @@ class MobilityCiclePlotWeekday extends Component {
                             id="dropdown-item-button" 
                             variant="outline-info"
                             size="sm"
-                            title={COUNTRY_LABELS[_.indexOf(COUNTRIES, this.state.country)]}>
+                            title={COUNTRY_LABELS[_.indexOf(COUNTRIES, country)]}>
                             {
                                 _.sortBy(COUNTRY_LABELS).map( c => <Dropdown.Item key={c} onClick={() => this.setState({country: COUNTRIES[_.indexOf(COUNTRY_LABELS, c)]})}>
                                         { c }
@@ -107,7 +107,7 @@ class MobilityCiclePlotWeekday extends Component {
                     {   !_.isNil(groupedData) &&
                                 _.toPairs(
                                     _.groupBy(
-                                        _.get(groupedData, _.indexOf(DAY_NAMES, this.state.day)),
+                                        _.get(groupedData, _.indexOf(DAY_NAMES, day)),
                                         d => d.metric
                                     )
                                 )
@@ -127,6 +127,7 @@ class MobilityCiclePlotWeekday extends Component {
                                                 callback2={this.unsetLinkedDate}
                                                 country={country}
                                                 date={date}
+                                                day={day}
                                             />
                                         </Col>
                                     </Row>                                    
@@ -159,6 +160,7 @@ class MobilityCiclePlotWeekday extends Component {
                                                     callback2={this.unsetLinkedDate}
                                                     country={country}
                                                     date={date}
+                                                    day={day}
                                                 />
                                             </Col>
                                         </Row>          

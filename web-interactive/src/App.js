@@ -68,7 +68,7 @@ class App extends Component {
                                     <Container>
                                         <Row>
                                             <Col xs={7}>                                        
-                                                <h1 className="main">Restriccions in mobility and COVID-19 transmission</h1>
+                                                <h1 className="main">Restrictions in mobility and COVID-19 transmission</h1>
                                             </Col>
                                         </Row>
                                         <Row>

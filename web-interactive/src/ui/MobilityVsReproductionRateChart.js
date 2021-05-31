@@ -237,7 +237,7 @@ class MobilityVsReproductionRateChart extends Component {
         // measure them and interpolate!
         const lB = this.pathB.node().getTotalLength();
         const lC = this.pathC.node().getTotalLength();
-        const l = (lB + (lC - lB) * (n - Math.floor(n)) ) * 0.99; // 0.99 because there is some extra offset in the totalLength...
+        const l = (lB + (lC - lB) * (n - Math.floor(n)) ) * 0.98; // 0.xx because there is some extra offset in the totalLength...
 
         // finally, apply a stroke-dasharray of the correct length
         if(_.isUndefined(stepBefore)) {

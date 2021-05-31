@@ -60,7 +60,7 @@ class MobilityChangesWeeksChart extends Component {
     updateChart(data) {
 
         this.svg.selectAll("*").remove();
-        
+
         // set ids to weeks
         data.forEach( d => {
             let date = new Date(d.date),
@@ -175,13 +175,15 @@ class MobilityChangesWeeksChart extends Component {
 
             selection.clone()
                 .attr('class', "weekly-line-border")
-                .attr('stroke-width', scaleStrokeWidth(lastWeek)+ 7)
+                .attr('stroke-width', scaleStrokeWidth(lastWeek) + 4)
                 .attr('stroke-opacity', 1)
-                .attr('stroke', 'whitesmoke')
+                .style('mix-blend-mode', null)
+                .attr('stroke', 'white')
                 .raise();
             
             selection
-                .attr('stroke', '#122c91')
+                .attr('stroke', '#e83e8c')
+                .style('mix-blend-mode', null)
                 .attr('stroke-width', 3)
                 .attr('stroke-opacity', 1)
                 .raise();
@@ -189,9 +191,10 @@ class MobilityChangesWeeksChart extends Component {
 
         let unhighlightWeek = selection => {
             selection
-                .attr('stroke', d => (new Date(_.first(d).date)).getFullYear() === 2021? '#f8aa4b':'#95adbe')
+                .attr('stroke', d => (new Date(_.first(d).date)).getFullYear() === 2021? '#17a2b8':'#95adbe')
                 .attr('stroke-width', d => scaleStrokeWidth(_.first(d).week) )
-                .attr('stroke-opacity', 0.3);
+                .attr('stroke-opacity', 0.3)
+                .style('mix-blend-mode', 'multiply');
             graph.selectAll(".weekly-line-border").remove();
         };
 
@@ -237,9 +240,9 @@ class MobilityChangesWeeksChart extends Component {
                 .style('cursor', 'pointer')
                 .attr('fill', 'none')
                 .style('mix-blend-mode', 'multiply')
-                .attr('stroke', d => (new Date(_.first(d).date)).getFullYear() === 2021? '#f8aa4b':'#95adbe')
+                .attr('stroke', d => (new Date(_.first(d).date)).getFullYear() === 2021? '#17a2b8':'#95adbe')
                 .attr('stroke-width', d => scaleStrokeWidth(_.first(d).week) )
-                .attr('stroke-opacity', d => (new Date(_.first(d).date)).getFullYear() === 2021? 0.75:0.3 ) // d => scaleStrokeOpacity(_.first(d).week) )
+                .attr('stroke-opacity', d => (new Date(_.first(d).date)).getFullYear() === 2021? 0.4:0.2 ) // d => scaleStrokeOpacity(_.first(d).week) )
 
         // highlight last week by default
         highlightWeek(

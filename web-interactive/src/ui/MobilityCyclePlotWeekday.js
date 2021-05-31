@@ -19,6 +19,8 @@ class MobilityCiclePlotWeekday extends Component {
         this.state = {
             country: 'ES'
         };
+        this.linkedDate = this.linkedDate.bind(this);
+        this.unsetLinkedDate = this.unsetLinkedDate.bind(this);
     }
 
 
@@ -27,19 +29,29 @@ class MobilityCiclePlotWeekday extends Component {
         this.setState({day:DAY_NAMES[1]});
     }
 
+
+    linkedDate(date) {
+        this.setState({date})
+    }
+
+    unsetLinkedDate() {
+        this.setState({date:null});
+    }
+
+
     render() {
         let { data } = this.props,
-            { day, country } = this.state,
+            { day, country, date } = this.state,
             groupedData;
 
         if(data && day)
             groupedData = _.groupBy(_.get(data, country), d => d.weekDay);
 
         return <Fragment>
+            <hr className="ghost"/>
             <Container>
                 <Row>
                     <Col>
-                        <h1>How was your day?</h1>
                         <p>
                             These Community Mobility Reports can be helpful at providing insights into what has changed in response to policies aimed at combating COVID-19. However, movement trends over time show mixed phenomena since mobility variations can be either due to policies aimed at combating COVID-19, or because of more inherent reasons like people not going to places of work because of holiday    periods or public holidays, mobility variations between weekends and working days, or the citizenship not going to parks because of the period of the year.
                         </p>
@@ -74,7 +86,7 @@ class MobilityCiclePlotWeekday extends Component {
                             size="sm"
                             title={COUNTRY_LABELS[_.indexOf(COUNTRIES, this.state.country)]}>
                             {
-                                COUNTRY_LABELS.map( c => <Dropdown.Item key={c} onClick={() => this.setState({country: COUNTRIES[_.indexOf(COUNTRY_LABELS, c)]})}>
+                                _.sortBy(COUNTRY_LABELS).map( c => <Dropdown.Item key={c} onClick={() => this.setState({country: COUNTRIES[_.indexOf(COUNTRY_LABELS, c)]})}>
                                         { c }
                                     </Dropdown.Item>
                                 )
@@ -85,7 +97,7 @@ class MobilityCiclePlotWeekday extends Component {
                 <hr className="ghost"/>
                 <Row>
                     <Col className="text-center">
-                        <div className="chart-title">Day-of-the-week change in mobilty (%), by category of places.</div>
+                        <div className="chart-title">Day-of-the-week change in mobilty (%), by category of places, {COUNTRY_LABELS[_.indexOf(COUNTRIES, country)]}</div>
                         <div className="chart-caption">Change relative to baseline (median values from the five‑week period 3 Jan – 6 Feb 2020)</div>
                     </Col>
                 </Row>   
@@ -103,21 +115,25 @@ class MobilityCiclePlotWeekday extends Component {
                                 .reverse()
                                 .map( (tuple, i) => <Row style={{marginBottom:'1em'}} key={i}>
                                         <Col xs={12}>
-                                            <h6 style={{marginRight:'1em'}} className="text-right">{MOBILITY_CATEGORIES[tuple[0]]}</h6>
+                                            <h6 style={{marginRight:'1em'}} className="text-right text-shadow">{MOBILITY_CATEGORIES[tuple[0]]}</h6>
                                         </Col>
                                         <Col>
-                                            <MobilityCyclePlotWeekdayChart
+                                            <MobilityCyclePlotWeekdayChart                                                
                                                 axis={i === 0? 'top':i === _.keys(MOBILITY_CATEGORIES).length?'bottom':'none'}
                                                 key={i}
                                                 category={tuple[0]}
                                                 data={tuple[1]}
+                                                callback={this.linkedDate}
+                                                callback2={this.unsetLinkedDate}
+                                                country={country}
+                                                date={date}
                                             />
                                         </Col>
                                     </Row>                                    
                                 )
                         }
                         <p>
-                            <strong>Residential and workplaces</strong> reveal clearly the overall trend in mobility change due to the spread. Altough they are not comparable (residential category shows a change in duration, while others measure a change in total visitors) and its percentage change is limited (people already spend much of the day at these places), they show the steadily recovery on the road to normality, mirroring each other for most of the countries.
+                            <strong>Residential and workplaces</strong> mirror each other for most of the countries, and reveal clearly the overall trend in mobility change due to the spread. Altough they are not comparable (residential category shows a change in duration, while others measure a change in total visitors) and its percentage change is limited (people already spend much of the day at these places), they show the steadily recovery on the road to normality.<br/><br/>Yet, there are still some countries like <span className="link" onClick={() => this.setState({country: "IN"})}>India</span> that are not leaving behind this reduction in mobility.
                         </p>    
                     </Col>
                     <Col>
@@ -139,6 +155,10 @@ class MobilityCiclePlotWeekday extends Component {
                                                     key={i}
                                                     category={tuple[0]}
                                                     data={tuple[1]}
+                                                    callback={this.linkedDate}
+                                                    callback2={this.unsetLinkedDate}
+                                                    country={country}
+                                                    date={date}
                                                 />
                                             </Col>
                                         </Row>          

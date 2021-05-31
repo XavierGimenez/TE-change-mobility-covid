@@ -26,15 +26,21 @@ class MobilityCyclePlotWeekdayChart extends Component {
 
     componentDidMount() {
         this.createChart();
-        this.props.data && this.updateChart(this.props.data);        
+        this.props.data && this.updateChart(this.props.data, this.props.callback);        
     }
 
 
-
     componentDidUpdate(prevProps) {
-        if(prevProps.data !== this.props.data) {
-            this.updateChart(this.props.data);            
-        }
+        
+        if(prevProps.country !== this.props.country)
+            this.updateChart(this.props.data, this.props.callback);            
+
+        if(prevProps.date !== this.props.date) {
+            if(_.isNull(this.props.date))
+                this.svg.select('line.date-hovered').remove()
+            else
+                this.highlightDate();
+        }            
     }
 
 
@@ -50,16 +56,32 @@ class MobilityCyclePlotWeekdayChart extends Component {
             .attr('width', this.width)
             .attr('height', this.height)
             .style('overflow', 'visible');
+        
+        this.svg.on("mouseleave", () => this.props.callback2());
     }
 
 
+    highlightDate() {
+        this.svg.select('line.date-hovered').remove();
 
-    updateChart(data) {
+        this.svg.append('line')
+            .attr('class', 'date-hovered')
+            .attr('x1', Math.round(this.scaleX(this.props.date)))
+            .attr('x2', Math.round(this.scaleX(this.props.date)))
+            .attr('y1', this.margin.top)
+            .attr('y2', this.height - this.margin.bottom)
+            .attr('stroke', '#d0d0d0')
+            .attr('stroke-width', 2)
+            .lower()
+    }
+
+
+    updateChart(data, callback) {
         let firstDate = new Date(_.first(data).date),
             lastDate = new Date(_.last(data).date);
         
         firstDate.setMonth(firstDate.getMonth() - 1 ); // not scalable for all scenarios...
-
+        
         let scaleX = d3.scaleTime()
                     .domain([firstDate, lastDate])
                     .range([0 + this.margin.left, this.width - this.margin.right]),
@@ -67,7 +89,7 @@ class MobilityCyclePlotWeekdayChart extends Component {
             maxyDomain = d3.max(yDomain, d => Math.abs(d)),
             scaleY = d3.scaleLinear()
                         .domain(yDomain)
-                        .range([this.height - this.margin.bottom, this.margin.top]),
+                        .range([this.height - this.margin.bottom, this.margin.top]).clamp(true),
             scaleColor = d3.scaleSequential(
                     //[-100, 100], // first approach, considering that the % of change can be comparable through all the categories
                     [-maxyDomain, maxyDomain], //best approach, each category refering itself in terms of percentual change
@@ -84,7 +106,9 @@ class MobilityCyclePlotWeekdayChart extends Component {
                     .x( d => scaleX(new Date(d.date)) )
                     .y( d => scaleY(d.mobility_change_from_baseline) )
                     .curve(d3.curveBasis);
-
+                          
+        this.scaleX = scaleX;
+        this.scaleY = scaleY;
         this.svg.selectAll("*").remove();
 
         // axis
@@ -180,6 +204,9 @@ class MobilityCyclePlotWeekdayChart extends Component {
                                 callout, 
                                 `${formatDate2(new Date(scaleX.invert(pointer[0])))}`
                             );
+                        callback && callback(
+                            new Date(scaleX.invert(pointer[0]))
+                        );
                     })
                     .on("mouseleave", function() {
                         tooltip.call(callout, null);

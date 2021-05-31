@@ -34,10 +34,13 @@ class MobilityChangesWeeks extends Component {
         return <Container fluid>
             <section className="text-center">                
                 <Row className="justify-content-center">
-                    <Col xs={5}>
-                        <h1>Mobility Changes</h1>
-                        Make country clickables to explain several situations as of today
-                        <span className="highlight year2020">year 2020</span> and <span className="highlight year2021">year 2021</span>
+                    <Col xs={4}>
+                        <p>
+                            When looking at mobility trends considering weekly time spans and in comparison to 2020, this <span className="highlight year2021">year 2021</span> is reaching mobility levels close to the baseline.
+                        </p>
+                        <p>
+                            While these is true for most of the top economies (see <span className="link" onClick={() => this.setState({country:'NZ'})}>New Zealand</span>), there are still some countries like <span className="link" onClick={() => this.setState({country:'MX'})}>Mexico</span>, struggling at recovering normality levels of mobility.
+                        </p>                        
                         <div><small>Select country:</small></div>
                             <DropdownButton 
                                 id="dropdown-item-button" 
@@ -45,7 +48,7 @@ class MobilityChangesWeeks extends Component {
                                 size="sm"
                                 title={COUNTRY_LABELS[_.indexOf(COUNTRIES, this.state.country)]}>
                                 {
-                                    COUNTRY_LABELS.map( c => <Dropdown.Item key={c} onClick={() => this.setState({country: COUNTRIES[_.indexOf(COUNTRY_LABELS, c)]})}>
+                                    _.sortBy(COUNTRY_LABELS).map( c => <Dropdown.Item key={c} onClick={() => this.setState({country: COUNTRIES[_.indexOf(COUNTRY_LABELS, c)]})}>
                                             { c }
                                         </Dropdown.Item>
                                     )
@@ -53,6 +56,9 @@ class MobilityChangesWeeks extends Component {
                             </DropdownButton>
                     </Col>
                     <Col xs={7}>
+                        <div className="chart-title">Trends in mobilty change (%), by week and category of places, {COUNTRY_LABELS[_.indexOf(COUNTRIES, country)]}</div>
+                        <div className="chart-caption">Change relative to baseline (median values from the five‑week period 3 Jan – 6 Feb 2020)</div>
+                        <hr className="ghost"/>
                         {
                             countryData && _.chunk(_.toPairs(MOBILITY_CATEGORIES), 3).map( (chunk,i) => <Row key={i}>
                                 {

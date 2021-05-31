@@ -2,10 +2,8 @@ import React, { Component } from 'react';
 import { Fragment } from 'react';
 import { Col, Container, Dropdown, Row } from 'react-bootstrap';
 import * as _ from 'lodash';
-import * as d3 from 'd3';
 
 import { 
-    MOBILITY_CATEGORIES_INDEXES,
     MOBILITY_CATEGORIES
 } from '../common/constants';
 import MobilityVsReproductionCountry from './MobilityVsReproductionCountry'
@@ -47,7 +45,7 @@ class MobilityVsReproductionRateGrid extends Component {
                 </Col>
                 <Col>                    
                     <p>
-                        One way to account for these methodological problems is to look at the <a href="https://www.bloomberg.com/news/articles/2020-11-24/inside-bloomberg-s-covid-resilience-ranking" target="_blank">Bloomberg’s Covid Resilience Ranking</a>, which covers a wide number of datasets, indicators and indexes produced by organizations around the globe.                        
+                        One way to account for these methodological problems is to look at the <a href="https://www.bloomberg.com/news/articles/2020-11-24/inside-bloomberg-s-covid-resilience-ranking" target="_blank" rel="noreferrer">Bloomberg’s Covid Resilience Ranking</a>, which covers a wide number of datasets, indicators and indexes produced by organizations around the globe.                        
                     </p>
                     <p>
                         Below are a set of charts, showing the correlation between changes in mobility and reproduction rate for several countries, being all the countries sorted by its position in the Bloomberg’s Covid Resilience Ranking.
@@ -78,7 +76,7 @@ class MobilityVsReproductionRateGrid extends Component {
                             chunk.map( (country, j) => <Col key={j}>
                                 <Fragment>
                                     <h6 className="text-center">{COUNTRY_LABELS[_.indexOf(COUNTRIES, country[0])]}</h6>
-                                    <MobilityVsReproductionCountry data={_.filter(country[1], o => o.metric === this.state.mobilityCategory)}/>
+                                    <MobilityVsReproductionCountry country={COUNTRY_LABELS[_.indexOf(COUNTRIES, country[0])]} data={_.filter(country[1], o => o.metric === this.state.mobilityCategory)}/>
                                 </Fragment>                            
                             </Col>)
                         }

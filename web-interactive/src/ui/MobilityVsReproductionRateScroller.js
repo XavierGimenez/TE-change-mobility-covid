@@ -180,7 +180,7 @@ class MobilityVsReproductionRateScroller extends Component {
                                         All this back-and-forth between lifting the policies on mobility restrictions while keeping the outbreak under control ends up giving a global picture of the overall situation over the last year, summarizing how the whole country has been behaving in terms of this balance between isolating the population when necessary and mantaining coronavirus' reproduction rate under values of 1.
                                     </p>
                                     <p style={{marginTop:"15vh"}}>
-                                        Such relationship is shown between reproduction rate and the mobility category <span class="highlight">{MOBILITY_CATEGORIES[mobilityCategory]}</span> in Spain, but you can inspect other categories as well:
+                                        Such relationship is shown between reproduction rate and the mobility category <span className="highlight">{MOBILITY_CATEGORIES[mobilityCategory]}</span> in Spain, but you can inspect other categories as well:
                                     </p>
                                     <p></p>
                                         <ButtonGroup vertical style={{marginLeft:"1vw"}}>

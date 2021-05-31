@@ -38,20 +38,6 @@ class MobilityVsReproductionCountry extends Component {
         this.width = size.width;
         this.height = this.width * 0.75;
         this.margin = {top: 5, right:50, bottom: 150, left: 50};
-
-        this.scaleX = d3.scaleLinear()
-            .domain(
-                d3.extent(data, d => d.mobility_change_from_baseline)
-                    .map( d => _.clamp(d, -100, 100))
-                    .map( (d,i) => {
-                        return i === 0? d:(d<10? 10:d)
-                })
-            )
-            .range([0 + this.margin.left, this.width - this.margin.right]);
-
-        this.scaleY = d3.scaleLinear()
-            .domain([0, d3.max(data, d => d.reproduction_rate)])
-            .range([this.height - this.margin.bottom, this.margin.top]);
         
         this.svg = d3.select(this.node)
             .attr('width', this.width)
@@ -67,6 +53,23 @@ class MobilityVsReproductionCountry extends Component {
     updateChart(data) {        
         this.svg.selectAll("*").remove();
         
+        // do we clamp?
+        let clamped = d3.max(data, d => d.mobility_change_from_baseline) > 100;
+
+        this.scaleX = d3.scaleLinear()
+            .domain(
+                d3.extent(data, d => d.mobility_change_from_baseline)
+                    .map( d => _.clamp(d, -100, 100))
+                    .map( (d,i) => {
+                        return i === 0? d:(d<10? 10:d)
+                })
+            )
+            .range([0 + this.margin.left, this.width - this.margin.right]);
+
+        this.scaleY = d3.scaleLinear()
+            .domain([0, d3.max(data, d => d.reproduction_rate)])
+            .range([this.height - this.margin.bottom, this.margin.top]);
+
         // graph        
         let graph = this.svg.append('g');     
         let radius = 4.5; // * (Math.abs(this.scaleX.domain()[0]) / this.scaleX.domain()[1]);
@@ -147,7 +150,7 @@ class MobilityVsReproductionCountry extends Component {
                 d3.axisLeft(this.scaleY)
                 .ticks(3)
                 .tickSize(0)
-                .tickFormat( tick => tick === 0 ? "" : tick)
+                .tickFormat( tick => tick === 0 ? "" :tick )
             )
             .call( 
                 g => g.selectAll('*')
@@ -158,11 +161,13 @@ class MobilityVsReproductionCountry extends Component {
             .call(
                 d3.axisBottom(this.scaleX)
                 .ticks(3)
-                .tickSize(0)
+                //.tickSize(0)
+                .tickFormat( tick => tick === 100? (clamped? "100 or more":tick):tick )
             )
+            .call(g => g.select(".domain").remove())
             .call( 
-                g => g.selectAll('*')
-                    .attr('stroke-width', 0)
+                g => g.selectAll('line')
+                    .attr('stroke-width', 1)
                     .attr('stroke', '#d0d0d0')
             );
         this.svg.append("g").call(xAxis);

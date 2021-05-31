@@ -12,9 +12,9 @@ import MobilityCiclePlotWeekday from './ui/MobilityCyclePlotWeekday';
 import { MOBILITY_CATEGORIES_INDEXES } from './common/constants';
 import MobilityVsReproductionRateGrid from './ui/MobilityVsReproductionRateGrid';
 import {
-    COUNTRIES,
-    COUNTRY_LABELS
+    COUNTRIES
 } from './common/constants';
+import { Col, Container, Row } from 'react-bootstrap';
 
 
 
@@ -62,12 +62,54 @@ class App extends Component {
                 data && <Provider data = {data}>
                     <Context.Consumer>
                         {
-                            context => <Fragment>                                   
+                            context => <Fragment>       
+                                <div className="background-colored">
+                                    <section className="footer" style={{margin:0}}>
+                                    <Container>
+                                        <Row>
+                                            <Col xs={7}>                                        
+                                                <h1 className="main">Reduction in mobility and COVID-19 transmission</h1>
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col>
+                                                <p>
+                                                    In response to the COVID-19 pandemic, countries have sought to control SARS-CoV-2 transmission by restricting population movement through social distancing interventions, thus reducing the number of contacts. Hence, implementing strict social distancing policies is likely the most effective measure to suppress transmission.<br/>                                                
+                                                </p>
+                                                <p>
+                                                    Google COVID-19 Community Mobility Reports and its mobility data represent an important proxy measure of social distancing, and many websites also offer research and statistics on the coronavirus pandemic. Here, we characterize the relationship between transmission and mobility for some countries around the world.
+                                                </p>
+                                            </Col>
+                                        </Row>
+                                    </Container>                            
+                                    </section>
+                                </div>
                                 <MobilityCiclePlotWeekday {...context}/>
                                 <MobilityChangesWeeks {...context}/>                                
                                 <MobilityVsReproductionRateScroller {...context}/>
-                                <MobilityVsReproductionRateGrid {...context}/>
-                                
+                                <MobilityVsReproductionRateGrid {...context}/>                                
+                                <div className="background-colored">
+                                    <section className="footer">
+                                        <Container fluid>
+                                            <Row>
+                                                <Col></Col>
+                                                <Col>
+                                                    <h3>MOTIVATION</h3>
+                                                    <p>
+                                                        Is the lockdown an effective measure to control the COVID-19 outbreak?<br/>This website explores the patterns between changes in population mobility due to COVID-19 policies and the effect on the spread of the virus and its reproduction rate.
+                                                    </p>
+                                                </Col>                                                
+                                                <Col>
+                                                    <h3>DATA</h3>
+                                                    <p>
+                                                        This site presents <a href="https://www.google.com/covid19/mobility/" target="_blank" rel="noreferrer">Google COVID-19 Community Mobility Reports</a> data on a set of countries of interest, as well as data related to the coronavirus pandemic from <a href="https://ourworldindata.org/coronavirus" target="_blank" rel="noreferrer">Our World in Data website.</a>
+                                                    </p>
+                                                </Col>
+                                                <Col></Col>
+                                            </Row>
+                                        </Container>
+                                    </section>                                    
+                                </div>                                
                             </Fragment>
                         }
                     </Context.Consumer>
